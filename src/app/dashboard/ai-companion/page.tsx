@@ -4,9 +4,12 @@ import { useState, useRef, useEffect } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Bot, User, Send, Loader2 } from 'lucide-react';
+import { Bot, User, Send, Loader2, Volume2, VolumeX } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { respondToUserQuery } from '@/ai/flows/respond-to-user-query';
+import { textToSpeech } from '@/ai/flows/text-to-speech';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 
 type Message = {
   role: 'user' | 'assistant';
@@ -22,7 +25,11 @@ export default function AiCompanionPage() {
   ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isTtsEnabled, setIsTtsEnabled] = useState(false);
+  const [isTtsLoading, setIsTtsLoading] = useState(false);
+  
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const audioRef = useRef<HTMLAudioElement>(null);
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,13 +37,30 @@ export default function AiCompanionPage() {
 
     const userMessage: Message = { role: 'user', content: input };
     setMessages((prev) => [...prev, userMessage]);
+    const currentInput = input;
     setInput('');
     setIsLoading(true);
 
     try {
-      const response = await respondToUserQuery({ query: input });
+      const response = await respondToUserQuery({ query: currentInput });
       const assistantMessage: Message = { role: 'assistant', content: response.response };
       setMessages((prev) => [...prev, assistantMessage]);
+
+      if (isTtsEnabled) {
+          setIsTtsLoading(true);
+          try {
+              const ttsResponse = await textToSpeech({ text: response.response });
+              if (audioRef.current) {
+                  audioRef.current.src = ttsResponse.audioDataUri;
+                  audioRef.current.play().catch(e => console.error("Audio playback failed:", e));
+              }
+          } catch (ttsError) {
+              console.error("Error with TTS generation:", ttsError);
+          } finally {
+              setIsTtsLoading(false);
+          }
+      }
+
     } catch (error) {
       const errorMessage: Message = {
         role: 'assistant',
@@ -61,14 +85,23 @@ export default function AiCompanionPage() {
         <div className="container mx-auto max-w-3xl h-full flex flex-col">
             <Card className="flex-1 flex flex-col shadow-lg">
                 <CardHeader className="border-b">
-                    <CardTitle className="font-headline text-2xl flex items-center gap-3">
-                        <Avatar>
-                            <AvatarFallback className="bg-primary text-primary-foreground">
-                                <Bot />
-                            </AvatarFallback>
-                        </Avatar>
-                        AI Companion
-                    </CardTitle>
+                    <div className="flex items-center justify-between">
+                        <CardTitle className="font-headline text-2xl flex items-center gap-3">
+                            <Avatar>
+                                <AvatarFallback className="bg-primary text-primary-foreground">
+                                    <Bot />
+                                </AvatarFallback>
+                            </Avatar>
+                            AI Companion
+                        </CardTitle>
+                        <div className="flex items-center space-x-2">
+                           {isTtsLoading && <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />}
+                           <Switch id="tts-mode" checked={isTtsEnabled} onCheckedChange={setIsTtsEnabled} aria-label="Toggle Text-to-Speech" />
+                           <Label htmlFor="tts-mode" className="cursor-pointer">
+                               {isTtsEnabled ? <Volume2 className="h-5 w-5" /> : <VolumeX className="h-5 w-5 text-muted-foreground" />}
+                           </Label>
+                        </div>
+                    </div>
                     <CardDescription>
                         Conversational AI provides empathetic, personalized support based on your journal and mood history.
                         <em className="block text-xs mt-2">
@@ -142,6 +175,7 @@ export default function AiCompanionPage() {
                 </div>
             </Card>
         </div>
+        <audio ref={audioRef} hidden />
     </div>
   );
 }
