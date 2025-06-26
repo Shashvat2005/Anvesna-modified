@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
@@ -14,25 +14,28 @@ type JournalEntry = {
   content: string;
 };
 
-const initialEntries: JournalEntry[] = [
-    {
-        id: 1,
-        date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toLocaleDateString(),
-        content: "Felt a bit overwhelmed with assignments today. Managed to finish the presentation slides, which is a relief. Tried a 5-minute meditation before bed."
-    },
-    {
-        id: 2,
-        date: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toLocaleDateString(),
-        content: "Had a really nice chat with a friend from home. It's good to know I have support. Feeling more positive and hopeful about the week ahead."
-    }
-];
-
 export default function JournalPage() {
-    const [entries, setEntries] = useState<JournalEntry[]>(initialEntries);
+    const [entries, setEntries] = useState<JournalEntry[]>([]);
     const [newEntry, setNewEntry] = useState('');
     const [summary, setSummary] = useState('');
     const [isSummarizing, setIsSummarizing] = useState(false);
     const { toast } = useToast();
+
+    useEffect(() => {
+        const initialEntries: JournalEntry[] = [
+            {
+                id: 1,
+                date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toLocaleDateString(),
+                content: "Felt a bit overwhelmed with assignments today. Managed to finish the presentation slides, which is a relief. Tried a 5-minute meditation before bed."
+            },
+            {
+                id: 2,
+                date: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toLocaleDateString(),
+                content: "Had a really nice chat with a friend from home. It's good to know I have support. Feeling more positive and hopeful about the week ahead."
+            }
+        ];
+        setEntries(initialEntries);
+    }, []);
 
     const handleSaveEntry = () => {
         if (!newEntry.trim()) {
@@ -154,7 +157,9 @@ export default function JournalPage() {
                             </CardContent>
                         </Card>
                     )) : (
-                        <p className="text-muted-foreground text-center py-8">You have no journal entries yet.</p>
+                        <div className="text-center py-8">
+                          <p className="text-muted-foreground">Loading entries...</p>
+                        </div>
                     )}
                 </div>
             </div>
