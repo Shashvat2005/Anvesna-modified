@@ -9,11 +9,7 @@ export function Hero() {
         <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2">
           <div className="text-center lg:text-left">
             <h1 className="font-headline text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl lg:text-6xl">
-              Get Instant AI Support
-              <br />
-              Join Safe Communities
-              <br />
-              Book Licensed Therapists
+              Get Instant AI Support, Join Safe Communities, Book Licensed Therapists
             </h1>
             <p className="mt-6 text-lg leading-8 text-muted-foreground">
               Get 24/7 support from your personal AI companion, connect
