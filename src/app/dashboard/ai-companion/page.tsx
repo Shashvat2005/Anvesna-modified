@@ -73,7 +73,12 @@ export default function AiCompanionPage() {
                         </Avatar>
                         AI Companion
                     </CardTitle>
-                    <CardDescription>Your 24/7 guide for emotional support and insights.</CardDescription>
+                    <CardDescription>
+                        Conversational AI provides empathetic, personalized support based on your journal and mood history.
+                        <em className="block text-xs mt-2">
+                            All insights and prompts are drawn from your secure journaling entries to give you the most relevant emotional support.
+                        </em>
+                    </CardDescription>
                 </CardHeader>
                 <CardContent className="flex-1 p-0">
                     <ScrollArea className="h-full p-4" ref={scrollAreaRef}>
