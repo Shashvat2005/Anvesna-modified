@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -18,10 +19,11 @@ async function signupAction(formData: FormData) {
   const lastName = formData.get("last-name");
   const email = formData.get("email");
   const password = formData.get("password");
+  const confirmPassword = formData.get("confirm-password");
 
   // This is a mock signup.
-  // In a real app, you'd create a new user in the database.
-  if (firstName && lastName && email && password) {
+  // In a real app, you'd validate that passwords match and create a new user.
+  if (firstName && lastName && email && password && password === confirmPassword) {
     console.log("New user signed up:", { firstName, lastName, email });
     redirect("/dashboard");
   }
@@ -71,6 +73,10 @@ export default function SignupPage() {
               <div className="grid gap-2">
                 <Label htmlFor="password">Password</Label>
                 <Input id="password" name="password" type="password" required />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="confirm-password">Confirm Password</Label>
+                <Input id="confirm-password" name="confirm-password" type="password" required />
               </div>
               <Button type="submit" className="w-full" formAction={signupAction}>
                 Create an account
