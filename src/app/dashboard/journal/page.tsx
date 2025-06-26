@@ -22,6 +22,7 @@ export default function JournalPage() {
     const { toast } = useToast();
 
     useEffect(() => {
+        // This is to avoid hydration mismatch
         const initialEntries: JournalEntry[] = [
             {
                 id: 1,
@@ -86,7 +87,12 @@ export default function JournalPage() {
             <div className="container mx-auto max-w-4xl space-y-8">
                 <div className="text-left">
                     <h1 className="font-headline text-3xl font-bold text-foreground">My Journal</h1>
-                    <p className="text-muted-foreground mt-1">A private space to reflect on your thoughts and feelings.</p>
+                    <p className="text-muted-foreground mt-1">
+                        Secure space for users to write journal entries and track emotional state.
+                        <em className="block text-xs mt-2">
+                            Your journal entries are securely sent to our AI companion for real-time sentiment analysis and personalized emotional support.
+                        </em>
+                    </p>
                 </div>
 
                 <Card className="shadow-lg">
