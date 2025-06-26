@@ -2,6 +2,7 @@
 'use client';
 
 import Link from "next/link";
+import { useParams } from "next/navigation";
 import { ArrowLeft, MessageSquarePlus, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -109,8 +110,10 @@ const PostCard = ({ post }: { post: Post }) => (
     </Card>
 )
 
-export default function CommunityPage({ params }: { params: { slug: string } }) {
-    const community = communitiesData[params.slug] || {
+export default function CommunityPage() {
+    const params = useParams();
+    const slug = typeof params.slug === 'string' ? params.slug : '';
+    const community = communitiesData[slug] || {
         title: 'Community Not Found',
         description: 'Please select a valid community.',
         members: 0,
