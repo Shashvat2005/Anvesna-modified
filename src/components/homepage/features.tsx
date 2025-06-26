@@ -13,7 +13,7 @@ const features = [
     name: 'Anonymous Peer Support',
     description: 'Join communities of students who understand what you\'re going through. Share your journey, offer support, and break the stigma together in a moderated, anonymous environment.',
     icon: Users,
-    image: 'https://placehold.co/500x500.png',
+    image: 'https://pplx-res.cloudinary.com/image/upload/v1750950234/gpt4o_images/qmlzwsvjdlniuzxeziti.png',
     dataAiHint: 'community chat illustration'
   },
   {
