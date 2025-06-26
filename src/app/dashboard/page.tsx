@@ -34,7 +34,7 @@ const quickLinks = [
     textColor: 'text-green-600 dark:text-green-300',
   },
   {
-    title: 'Communities',
+    title: 'Community Support',
     description: 'Connect with peers anonymously.',
     icon: Users,
     href: '/dashboard/communities',
@@ -42,7 +42,7 @@ const quickLinks = [
     textColor: 'text-purple-600 dark:text-purple-300',
   },
   {
-    title: 'Find a Therapist',
+    title: 'Book a Therapist',
     description: 'Book a session with a professional.',
     icon: Stethoscope,
     href: '/dashboard/therapists',
