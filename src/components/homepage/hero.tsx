@@ -34,7 +34,7 @@ export function Hero() {
               width={500}
               height={500}
               className="rounded-full object-cover shadow-2xl"
-              data-ai-hint="wellness meditation"
+              data-ai-hint="peaceful meditation illustration"
             />
           </div>
         </div>

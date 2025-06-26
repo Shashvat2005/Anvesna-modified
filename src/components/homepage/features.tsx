@@ -7,28 +7,28 @@ const features = [
     description: 'Our smart journal understands your mood patterns, helping you explore your thoughts and feelings in a safe, guided space. Get personalized insights to foster self-awareness.',
     icon: MessageSquareHeart,
     image: 'https://placehold.co/500x500.png',
-    dataAiHint: 'journaling mobile app'
+    dataAiHint: 'journaling app illustration'
   },
   {
     name: 'Anonymous Peer Support',
     description: 'Join communities of students who understand what you\'re going through. Share your journey, offer support, and break the stigma together in a moderated, anonymous environment.',
     icon: Users,
     image: 'https://placehold.co/500x500.png',
-    dataAiHint: 'community chat app'
+    dataAiHint: 'community chat illustration'
   },
   {
     name: 'Personalized Recommendations',
     description: 'Based on your journal entries and mood data, Anvesna provides tailored recommendations, from mindfulness exercises to relevant articles, to support your mental wellbeing proactively.',
     icon: Lightbulb,
     image: 'https://placehold.co/500x500.png',
-    dataAiHint: 'mobile app dashboard'
+    dataAiHint: 'wellness dashboard illustration'
   },
   {
     name: 'Absolute Privacy',
     description: 'Your data is yours. We use end-to-end encryption and adhere to the strictest privacy standards. Your conversations, whether with our AI or in peer groups, are secure.',
     icon: Lock,
     image: 'https://placehold.co/500x500.png',
-    dataAiHint: 'data security privacy'
+    dataAiHint: 'data privacy illustration'
   },
 ];
 

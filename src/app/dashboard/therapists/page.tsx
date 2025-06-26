@@ -21,6 +21,7 @@ type Therapist = {
   rating: number;
   fees: string;
   availability: string[];
+  dataAiHint: string;
 };
 
 const therapists: Therapist[] = [
@@ -29,6 +30,7 @@ const therapists: Therapist[] = [
         credentials: 'PhD (Clinical Psychology)',
         avatar: 'NV',
         image: 'https://placehold.co/300x400.png',
+        dataAiHint: 'female therapist portrait',
         specialties: ['Anxiety', 'Academic Stress', 'Sleep Issues'],
         rating: 4.5,
         fees: '₹1,000 – ₹1,800',
@@ -39,6 +41,7 @@ const therapists: Therapist[] = [
         credentials: 'MHP',
         avatar: 'RS',
         image: 'https://placehold.co/300x400.png',
+        dataAiHint: 'male therapist portrait',
         specialties: ['Depression', 'Relationship Conflict'],
         rating: 3.8,
         fees: '₹700 – ₹1,200',
@@ -49,6 +52,7 @@ const therapists: Therapist[] = [
         credentials: 'PsyD',
         avatar: 'AP',
         image: 'https://placehold.co/300x400.png',
+        dataAiHint: 'female therapist professional',
         specialties: ['Exam Anxiety', 'Time Management', 'CBT'],
         rating: 4.3,
         fees: '₹900 – ₹1,600',
@@ -59,6 +63,7 @@ const therapists: Therapist[] = [
         credentials: 'Licensed Counselor',
         avatar: 'SR',
         image: 'https://placehold.co/300x400.png',
+        dataAiHint: 'female counselor portrait',
         specialties: ['Mindfulness', 'Stress Management', 'Grief'],
         rating: 4.8,
         fees: '₹850 – ₹1,400',
@@ -69,6 +74,7 @@ const therapists: Therapist[] = [
         credentials: 'Psychiatrist',
         avatar: 'VM',
         image: 'https://placehold.co/300x400.png',
+        dataAiHint: 'male psychiatrist portrait',
         specialties: ['Mood Disorders', 'ADHD', 'Medication Management'],
         rating: 4.6,
         fees: '₹1,200 – ₹2,000',
@@ -79,6 +85,7 @@ const therapists: Therapist[] = [
         credentials: 'MA, Counseling Psychology',
         avatar: 'FK',
         image: 'https://placehold.co/300x400.png',
+        dataAiHint: 'female therapist headshot',
         specialties: ['Family Issues', 'Self-Esteem', 'Trauma'],
         rating: 4.4,
         fees: '₹750 – ₹1,300',
@@ -163,7 +170,7 @@ export default function TherapistsPage() {
                             <Card key={therapist.name} className="shadow-lg flex flex-col hover:shadow-xl transition-shadow">
                                 <CardHeader>
                                     <div className="flex items-center gap-4">
-                                        <Image src={therapist.image} alt={therapist.name} width={80} height={100} className="rounded-lg object-cover" data-ai-hint="therapist portrait" />
+                                        <Image src={therapist.image} alt={therapist.name} width={80} height={100} className="rounded-lg object-cover" data-ai-hint={therapist.dataAiHint} />
                                         <div className="w-full">
                                             <CardTitle className="font-headline text-xl">{therapist.name}</CardTitle>
                                             <p className="text-sm text-muted-foreground">{therapist.credentials}</p>
@@ -195,7 +202,7 @@ export default function TherapistsPage() {
                             <DialogHeader>
                                 <DialogTitle className="font-headline flex items-center gap-3">
                                     <Avatar>
-                                        <AvatarImage src={selectedTherapist.image} alt={selectedTherapist.name} data-ai-hint="therapist portrait" />
+                                        <AvatarImage src={selectedTherapist.image} alt={selectedTherapist.name} data-ai-hint={selectedTherapist.dataAiHint} />
                                         <AvatarFallback>{selectedTherapist.avatar}</AvatarFallback>
                                     </Avatar>
                                     Book a session with {selectedTherapist.name}

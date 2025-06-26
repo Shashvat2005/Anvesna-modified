@@ -44,7 +44,7 @@ export function Testimonials() {
               </CardContent>
               <div className="mt-4 flex items-center gap-4 px-6 pb-6">
                 <Avatar>
-                  <AvatarImage src={`https://placehold.co/40x40.png?text=${testimonial.avatar}`} />
+                  <AvatarImage src={`https://placehold.co/40x40.png?text=${testimonial.avatar}`} data-ai-hint="person portrait" />
                   <AvatarFallback>{testimonial.avatar}</AvatarFallback>
                 </Avatar>
                 <div>
