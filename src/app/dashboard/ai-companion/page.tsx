@@ -103,10 +103,7 @@ export default function AiCompanionPage() {
                         </div>
                     </div>
                     <CardDescription>
-                        Conversational AI provides empathetic, personalized support based on your journal and mood history.
-                        <em className="block text-xs mt-2">
-                            All insights and prompts are drawn from your secure journaling entries to give you the most relevant emotional support.
-                        </em>
+                        AI-Based emotional support tailored to your mood history and daily journal entries
                     </CardDescription>
                 </CardHeader>
                 <CardContent className="flex-1 overflow-y-auto p-4" ref={scrollContainerRef}>

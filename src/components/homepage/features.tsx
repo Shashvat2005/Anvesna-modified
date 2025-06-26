@@ -18,7 +18,7 @@ const features = [
   },
   {
     name: 'Personalized Recommendations',
-    description: 'Based on your journal entries and mood data, Anvesna provides tailored recommendations, from mindfulness exercises to relevant articles, to support your mental wellbeing proactively.',
+    description: 'Receive AI-driven recommendations and emotional support tailored to your mood history and journal entries. Anvesna helps you navigate your feelings with proactive suggestions and insights.',
     icon: Lightbulb,
     image: 'https://placehold.co/500x500.png',
     dataAiHint: 'wellness dashboard illustration'
