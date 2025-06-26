@@ -6,7 +6,7 @@ const features = [
     name: 'AI-Powered Journaling',
     description: 'Our smart journal understands your mood patterns, helping you explore your thoughts and feelings in a safe, guided space. Get personalized insights to foster self-awareness.',
     icon: MessageSquareHeart,
-    image: 'https://placehold.co/500x500.png',
+    image: 'https://pplx-res.cloudinary.com/image/upload/v1750950164/gpt4o_images/wp4evgpoqt1dhcbo1is7.png',
     dataAiHint: 'journaling app illustration'
   },
   {
@@ -20,7 +20,7 @@ const features = [
     name: 'Personalized Recommendations',
     description: 'Based on your journal entries and mood data, Anvesna provides tailored recommendations, from mindfulness exercises to relevant articles, to support your mental wellbeing proactively.',
     icon: Lightbulb,
-    image: 'https://pplx-res.cloudinary.com/image/upload/v1750950164/gpt4o_images/wp4evgpoqt1dhcbo1is7.png',
+    image: 'https://placehold.co/500x500.png',
     dataAiHint: 'wellness dashboard illustration'
   },
   {
