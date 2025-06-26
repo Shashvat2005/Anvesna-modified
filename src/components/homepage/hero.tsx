@@ -28,7 +28,7 @@ export function Hero() {
                 size="lg"
                 className="border-primary text-primary hover:bg-primary/5 hover:text-primary"
               >
-                <Link href="/dashboard/therapists">Browse Therapists</Link>
+                <Link href="/dashboard/therapists">Find My Therapist</Link>
               </Button>
             </div>
             <div className="mt-10 space-y-3 text-center lg:text-left">
@@ -36,13 +36,13 @@ export function Hero() {
                 <Bot className="h-5 w-5 text-primary" />
                 <p>
                   <strong className="text-foreground">AI Companion</strong> -
-                  Instant support anytime
+                  24/7 instant support
                 </p>
               </div>
               <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground lg:justify-start">
                 <Users className="h-5 w-5 text-primary" />
                 <p>
-                  <strong className="text-foreground">Anonymous Groups</strong> -
+                  <strong className="text-foreground">Anonymous Communities</strong> -
                   Connect safely with peers
                 </p>
               </div>
@@ -50,7 +50,7 @@ export function Hero() {
                 <Stethoscope className="h-5 w-5 text-primary" />
                 <p>
                   <strong className="text-foreground">
-                    Licensed Therapists
+                    Book Licensed Therapists
                   </strong>{" "}
                   - Professional care when needed
                 </p>
