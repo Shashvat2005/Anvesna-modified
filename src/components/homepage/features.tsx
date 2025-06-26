@@ -17,7 +17,7 @@ const features = [
     dataAiHint: 'community chat illustration'
   },
   {
-    name: 'Personalized Recommendations',
+    name: 'AI-Based emotional support',
     description: 'Receive AI-driven recommendations and emotional support tailored to your mood history and journal entries. Anvesna helps you navigate your feelings with proactive suggestions and insights.',
     icon: Lightbulb,
     image: 'https://placehold.co/500x500.png',
