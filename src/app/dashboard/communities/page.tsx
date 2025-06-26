@@ -9,31 +9,31 @@ const communityGroups = [
         title: 'Anxiety Support Group',
         description: 'A place to share and find support for anxiety.',
         icon: HeartPulse,
-        href: '#'
+        slug: 'anxiety-support'
     },
     {
         title: 'Depression & Low Mood',
         description: 'Connect with others who understand depression.',
         icon: CloudRain,
-        href: '#'
+        slug: 'depression-low-mood'
     },
     {
         title: 'Addiction & Detox Support',
         description: 'Support for addiction recovery and digital detox.',
         icon: LaptopMinimal,
-        href: '#'
+        slug: 'addiction-detox-support'
     },
     {
         title: 'Self-Growth Journey',
         description: 'Share your journey of personal development.',
         icon: TrendingUp,
-        href: '#'
+        slug: 'self-growth-journey'
     },
     {
         title: 'General Wellness Chat',
         description: 'A space for general wellness discussions.',
         icon: MessagesSquare,
-        href: '#'
+        slug: 'general-wellness-chat'
     }
 ];
 
@@ -65,7 +65,7 @@ export default function CommunitiesPage() {
                             </CardContent>
                             <CardFooter>
                                 <Button asChild className="w-full">
-                                    <Link href={group.href}>Enter Community</Link>
+                                    <Link href={`/dashboard/communities/${group.slug}`}>Enter Community</Link>
                                 </Button>
                             </CardFooter>
                         </Card>
