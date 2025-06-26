@@ -6,7 +6,7 @@ const features = [
     name: 'Verified & Affordable Therapists',
     description: 'Connect instantly with licensed professionals, pre-vetted for quality and trust, offering transparent and budget-friendly rates.',
     icon: Stethoscope,
-    image: 'https://placehold.co/500x500.png',
+    image: 'https://pplx-res.cloudinary.com/image/upload/v1750951790/gpt4o_images/heekjgtcitzbz9gylc6q.png',
     dataAiHint: 'therapist consultation online'
   },
   {
@@ -17,17 +17,17 @@ const features = [
     dataAiHint: 'community chat illustration'
   },
   {
-    name: 'AI-Based emotional support',
+    name: 'Personalized AI companion support',
     description: 'Receive AI-driven recommendations and emotional support tailored to your mood history and journal entries. Anvesna helps you navigate your feelings with proactive suggestions and insights.',
     icon: Lightbulb,
-    image: 'https://placehold.co/500x500.png',
+    image: 'https://pplx-res.cloudinary.com/image/upload/v1750952023/gpt4o_images/fhjt9zyadbpdweoxtnhm.png',
     dataAiHint: 'wellness dashboard illustration'
   },
   {
     name: 'Absolute Privacy',
     description: 'Your data is yours. We use end-to-end encryption and adhere to the strictest privacy standards. Your conversations, whether with our AI or in peer groups, are secure.',
     icon: Lock,
-    image: 'https://placehold.co/500x500.png',
+    image: 'https://pplx-res.cloudinary.com/image/upload/v1750952364/gpt4o_images/aikeohhznvzsjlwblrek.png',
     dataAiHint: 'data privacy illustration'
   },
 ];
