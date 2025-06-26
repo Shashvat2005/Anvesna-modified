@@ -15,7 +15,7 @@ import {
   SidebarTrigger,
   SidebarInset,
 } from '@/components/ui/sidebar';
-import { Bot, BookOpen, Users, Stethoscope, LayoutDashboard, LogOut } from 'lucide-react';
+import { Bot, BookOpen, Users, Stethoscope, LayoutDashboard, LogOut, Library } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 const navItems = [
@@ -24,6 +24,7 @@ const navItems = [
   { href: '/dashboard/journal', label: 'Journal', icon: BookOpen },
   { href: '/dashboard/communities', label: 'Communities', icon: Users },
   { href: '/dashboard/therapists', label: 'Therapists', icon: Stethoscope },
+  { href: '/dashboard/resources', label: 'Resources', icon: Library },
 ];
 
 export function SidebarLayout({ children }: { children: React.ReactNode }) {
