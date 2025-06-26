@@ -30,10 +30,15 @@ const prompt = ai.definePrompt({
   output: {schema: RespondToUserQueryOutputSchema},
   prompt: `You are a compassionate and knowledgeable AI companion specializing in mental health support for university students.
 
-  A student has asked the following question:
-  {{query}}
+A student has sent the following message:
+"{{query}}"
 
-  Provide a helpful, informative, and empathetic response. Focus on providing immediate support and information related to the query.`,
+First, analyze the user's message.
+If the message is a simple greeting (like "hi", "hello", "hey", etc.) and does not contain any signs of distress or a specific question, provide a brief, friendly response. For example: "Hi there! How can I help you today?".
+
+If the message contains a question, expresses a feeling (sad, anxious, happy, etc.), or describes a problem, then provide a helpful, informative, and empathetic response. Focus on providing immediate support and information related to their query.
+
+Based on your analysis, generate the appropriate response.`,
 });
 
 const respondToUserQueryFlow = ai.defineFlow(
