@@ -33,7 +33,7 @@ const therapists: Therapist[] = [
         dataAiHint: 'female therapist portrait',
         specialties: ['Anxiety', 'Academic Stress', 'Sleep Issues'],
         rating: 4.5,
-        fees: '₹1,000 – ₹1,800',
+        fees: 'Rs. 1,000 – Rs. 1,800',
         availability: ['June 28 (Sat) 4 PM', 'June 30 (Mon) 11 AM', 'July 2 (Wed) 6 PM'],
     },
     {
@@ -44,7 +44,7 @@ const therapists: Therapist[] = [
         dataAiHint: 'male therapist portrait',
         specialties: ['Depression', 'Relationship Conflict'],
         rating: 3.8,
-        fees: '₹700 – ₹1,200',
+        fees: 'Rs. 700 – Rs. 1,200',
         availability: ['June 29 (Sun) 2 PM', 'July 1 (Tue) 10 AM', 'July 3 (Thu) 3 PM'],
     },
     {
@@ -55,7 +55,7 @@ const therapists: Therapist[] = [
         dataAiHint: 'female therapist professional',
         specialties: ['Exam Anxiety', 'Time Management', 'CBT'],
         rating: 4.3,
-        fees: '₹900 – ₹1,600',
+        fees: 'Rs. 900 – Rs. 1,600',
         availability: ['June 27 (Fri) 5 PM', 'June 29 (Sun) 9 AM', 'July 1 (Tue) 4 PM'],
     },
     {
@@ -66,7 +66,7 @@ const therapists: Therapist[] = [
         dataAiHint: 'female counselor portrait',
         specialties: ['Mindfulness', 'Stress Management', 'Grief'],
         rating: 4.8,
-        fees: '₹850 – ₹1,400',
+        fees: 'Rs. 850 – Rs. 1,400',
         availability: ['June 28 (Sat) 10 AM', 'July 1 (Tue) 1 PM', 'July 4 (Fri) 11 AM'],
     },
     {
@@ -77,7 +77,7 @@ const therapists: Therapist[] = [
         dataAiHint: 'male psychiatrist portrait',
         specialties: ['Mood Disorders', 'ADHD', 'Medication Management'],
         rating: 4.6,
-        fees: '₹1,200 – ₹2,000',
+        fees: 'Rs. 1,200 – Rs. 2,000',
         availability: ['June 30 (Mon) 3 PM', 'July 2 (Wed) 9 AM', 'July 5 (Sat) 12 PM'],
     },
     {
@@ -88,7 +88,7 @@ const therapists: Therapist[] = [
         dataAiHint: 'female therapist headshot',
         specialties: ['Family Issues', 'Self-Esteem', 'Trauma'],
         rating: 4.4,
-        fees: '₹750 – ₹1,300',
+        fees: 'Rs. 750 – Rs. 1,300',
         availability: ['June 29 (Sun) 5 PM', 'July 3 (Thu) 6 PM', 'July 6 (Sun) 10 AM'],
     },
 ];
@@ -155,9 +155,9 @@ export default function TherapistsPage() {
                             <Select>
                                 <SelectTrigger className="h-11"><SelectValue placeholder="Fee Range" /></SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="<1000">Under ₹1000</SelectItem>
-                                    <SelectItem value="1000-1500">₹1000 - ₹1500</SelectItem>
-                                    <SelectItem value=">1500">Over ₹1500</SelectItem>
+                                    <SelectItem value="<1000">Under Rs. 1000</SelectItem>
+                                    <SelectItem value="1000-1500">Rs. 1000 - Rs. 1500</SelectItem>
+                                    <SelectItem value=">1500">Over Rs. 1500</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
