@@ -29,7 +29,7 @@ export function Hero() {
           </div>
           <div className="flex justify-center">
             <Image
-              src="https://placehold.co/500x500.png"
+              src="https://pplx-res.cloudinary.com/image/upload/v1750949129/gpt4o_images/nywrvddvn9tkpefryogj.png"
               alt="A person meditating peacefully, representing mental wellness."
               width={500}
               height={500}
