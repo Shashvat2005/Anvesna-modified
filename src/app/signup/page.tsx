@@ -27,6 +27,14 @@ async function signupAction(formData: FormData) {
   }
 }
 
+async function googleSignupAction() {
+  "use server";
+
+  // This is a mock Google signup.
+  console.log("Signing up with Google...");
+  redirect("/dashboard");
+}
+
 export default function SignupPage() {
   return (
     <div className="container flex min-h-[calc(100vh-12rem)] items-center justify-center py-12">
@@ -38,7 +46,7 @@ export default function SignupPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form action={signupAction}>
+          <form>
             <div className="grid gap-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="grid gap-2">
@@ -64,10 +72,10 @@ export default function SignupPage() {
                 <Label htmlFor="password">Password</Label>
                 <Input id="password" name="password" type="password" required />
               </div>
-              <Button type="submit" className="w-full">
+              <Button type="submit" className="w-full" formAction={signupAction}>
                 Create an account
               </Button>
-              <Button variant="outline" className="w-full" type="button">
+              <Button variant="outline" className="w-full" type="submit" formAction={googleSignupAction}>
                 Sign up with Google
               </Button>
             </div>

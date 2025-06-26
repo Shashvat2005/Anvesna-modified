@@ -24,6 +24,14 @@ async function loginAction(formData: FormData) {
   }
 }
 
+async function googleLoginAction() {
+  "use server";
+
+  // This is a mock Google authentication.
+  console.log("Mocking Google login...");
+  redirect("/dashboard");
+}
+
 export default function LoginPage() {
   return (
     <div className="container flex min-h-[calc(100vh-12rem)] items-center justify-center py-12">
@@ -35,7 +43,7 @@ export default function LoginPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form action={loginAction}>
+          <form>
             <div className="grid gap-4">
               <div className="grid gap-2">
                 <Label htmlFor="email">Email</Label>
@@ -59,10 +67,10 @@ export default function LoginPage() {
                 </div>
                 <Input id="password" name="password" type="password" required />
               </div>
-              <Button type="submit" className="w-full">
+              <Button type="submit" formAction={loginAction} className="w-full">
                 Login
               </Button>
-              <Button variant="outline" className="w-full" type="button">
+              <Button variant="outline" className="w-full" type="submit" formAction={googleLoginAction}>
                 Login with Google
               </Button>
             </div>
