@@ -20,7 +20,7 @@ const features = [
     name: 'Personalized Recommendations',
     description: 'Based on your journal entries and mood data, Anvesna provides tailored recommendations, from mindfulness exercises to relevant articles, to support your mental wellbeing proactively.',
     icon: Lightbulb,
-    image: 'https://placehold.co/500x500.png',
+    image: 'https://pplx-res.cloudinary.com/image/upload/v1750950164/gpt4o_images/wp4evgpoqt1dhcbo1is7.png',
     dataAiHint: 'wellness dashboard illustration'
   },
   {
