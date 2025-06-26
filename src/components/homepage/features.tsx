@@ -1,13 +1,13 @@
 import Image from 'next/image';
-import { Lightbulb, Users, Lock, MessageSquareHeart } from 'lucide-react';
+import { Lightbulb, Users, Lock, Stethoscope } from 'lucide-react';
 
 const features = [
   {
-    name: 'AI-Powered Journaling',
-    description: 'Our smart journal understands your mood patterns, helping you explore your thoughts and feelings in a safe, guided space. Get personalized insights to foster self-awareness.',
-    icon: MessageSquareHeart,
-    image: 'https://pplx-res.cloudinary.com/image/upload/v1750950164/gpt4o_images/wp4evgpoqt1dhcbo1is7.png',
-    dataAiHint: 'journaling app illustration'
+    name: 'Verified & Affordable Therapists',
+    description: 'Connect instantly with licensed professionals, pre-vetted for quality and trust, offering transparent and budget-friendly rates.',
+    icon: Stethoscope,
+    image: 'https://placehold.co/500x500.png',
+    dataAiHint: 'therapist consultation online'
   },
   {
     name: 'Anonymous Peer Support',
