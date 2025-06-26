@@ -13,8 +13,8 @@ export function Hero() {
             </h1>
             <p className="mt-6 text-lg leading-8 text-muted-foreground">
               Anvesna offers a Circle of Care with an AI companion, anonymous
-              peer communities, and professional support, designed for Indian
-              university students.
+              peer communities, and professional support—available to everyone
+              seeking mental wellness.
             </p>
             <div className="mt-10 flex items-center justify-center gap-x-6 lg:justify-start">
               <Button asChild size="lg">
