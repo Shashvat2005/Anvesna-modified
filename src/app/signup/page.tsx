@@ -30,7 +30,10 @@ export default function SignupPage() {
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
 
   useEffect(() => {
-    if (!auth) return;
+    if (!isFirebaseConfigured || !auth) {
+      setIsGoogleLoading(false);
+      return;
+    }
     // Set loading state for potential redirect processing
     const hasPendingRedirect = sessionStorage.getItem('pending-google-redirect');
     if (hasPendingRedirect) {
@@ -42,21 +45,28 @@ export default function SignupPage() {
       .then((result) => {
         if (result) {
           // User successfully signed in.
-          router.push('/dashboard');
-        } else {
-           // No redirect result, so stop loading state
-           setIsGoogleLoading(false);
+          // AppShell will handle the redirect.
+           toast({
+            title: 'Signup Successful',
+            description: `Welcome, ${result.user.displayName || result.user.email}!`,
+          });
         }
+        // No redirect result, so stop loading state
+        setIsGoogleLoading(false);
       })
       .catch((error) => {
+        let description = error.message;
+         if (error.code === 'auth/unauthorized-domain') {
+            description = "This app's domain is not authorized. Please add it to your Firebase project's 'Authorized domains' list.";
+        }
         toast({
           title: 'Google Signup Failed',
-          description: error.message,
+          description: description,
           variant: 'destructive',
         });
         setIsGoogleLoading(false);
       });
-  }, [router, toast]);
+  }, [toast]);
 
 
   const handleSignup = async (e: React.FormEvent) => {
@@ -85,7 +95,7 @@ export default function SignupPage() {
           displayName: `${firstName} ${lastName}`.trim(),
         });
       }
-      router.push('/dashboard');
+      // AppShell will handle redirect
     } catch (error: any) {
       toast({
         title: 'Signup Failed',
@@ -141,11 +151,11 @@ export default function SignupPage() {
               <div className="grid grid-cols-2 gap-4">
                 <div className="grid gap-2">
                   <Label htmlFor="first-name">First name</Label>
-                  <Input id="first-name" name="first-name" placeholder="Max" required value={firstName} onChange={(e) => setFirstName(e.target.value)} disabled={isLoading || isGoogleLoading} />
+                  <Input id="first-name" name="first-name" placeholder="Max" required value={firstName} onChange={(e) => setFirstName(e.target.value)} />
                 </div>
                 <div className="grid gap-2">
                   <Label htmlFor="last-name">Last name</Label>
-                  <Input id="last-name" name="last-name" placeholder="Robinson" required value={lastName} onChange={(e) => setLastName(e.target.value)} disabled={isLoading || isGoogleLoading} />
+                  <Input id="last-name" name="last-name" placeholder="Robinson" required value={lastName} onChange={(e) => setLastName(e.target.value)} />
                 </div>
               </div>
               <div className="grid gap-2">
@@ -158,16 +168,15 @@ export default function SignupPage() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  disabled={isLoading || isGoogleLoading}
                 />
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="password">Password</Label>
-                <Input id="password" name="password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} disabled={isLoading || isGoogleLoading} />
+                <Input id="password" name="password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="confirm-password">Confirm Password</Label>
-                <Input id="confirm-password" name="confirm-password" type="password" required value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} disabled={isLoading || isGoogleLoading} />
+                <Input id="confirm-password" name="confirm-password" type="password" required value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
               </div>
               <Button type="submit" className="w-full" disabled={isLoading || isGoogleLoading}>
                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}

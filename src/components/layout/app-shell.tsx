@@ -13,14 +13,23 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const { user, loading } = useAuth();
   const isDashboard = pathname.startsWith('/dashboard');
+  const isAuthPage = pathname === '/login' || pathname === '/signup';
 
   useEffect(() => {
-    if (!loading && !user && isDashboard) {
+    if (loading) return;
+
+    // If user is logged in, redirect from auth pages to dashboard
+    if (user && isAuthPage) {
+      router.push('/dashboard');
+    }
+
+    // If user is not logged in, redirect from dashboard pages to login
+    if (!user && isDashboard) {
       router.push('/login');
     }
-  }, [loading, user, isDashboard, router]);
+  }, [loading, user, isDashboard, isAuthPage, router, pathname]);
 
-  if (loading && isDashboard) {
+  if (loading && (isDashboard || isAuthPage)) {
     return (
         <div className="flex h-screen w-full">
             <div className="hidden md:flex flex-col gap-4 p-4 border-r bg-muted/40 w-64">

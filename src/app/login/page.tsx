@@ -27,7 +27,10 @@ export default function LoginPage() {
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
 
   useEffect(() => {
-    if (!auth) return;
+    if (!isFirebaseConfigured || !auth) {
+      setIsGoogleLoading(false);
+      return;
+    }
     // Set loading state for potential redirect processing
     const hasPendingRedirect = sessionStorage.getItem('pending-google-redirect');
     if (hasPendingRedirect) {
@@ -39,21 +42,28 @@ export default function LoginPage() {
       .then((result) => {
         if (result) {
           // User successfully signed in.
-          router.push('/dashboard');
-        } else {
-           // No redirect result, so stop loading state
-           setIsGoogleLoading(false);
+          // AppShell will handle the redirect to the dashboard.
+          toast({
+            title: 'Login Successful',
+            description: `Welcome back, ${result.user.displayName || result.user.email}!`,
+          });
         }
+        // No redirect result, so stop loading state
+        setIsGoogleLoading(false);
       })
       .catch((error) => {
+        let description = error.message;
+         if (error.code === 'auth/unauthorized-domain') {
+            description = "This app's domain is not authorized. Please add it to your Firebase project's 'Authorized domains' list.";
+        }
         toast({
           title: 'Google Login Failed',
-          description: error.message,
+          description: description,
           variant: 'destructive',
         });
         setIsGoogleLoading(false);
       });
-  }, [router, toast]);
+  }, [toast]);
 
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -69,7 +79,7 @@ export default function LoginPage() {
     setIsLoading(true);
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      router.push('/dashboard');
+      // AppShell will handle the redirect
     } catch (error: any) {
       toast({
         title: 'Login Failed',
@@ -132,7 +142,6 @@ export default function LoginPage() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  disabled={isLoading || isGoogleLoading}
                 />
               </div>
               <div className="grid gap-2">
@@ -152,7 +161,6 @@ export default function LoginPage() {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  disabled={isLoading || isGoogleLoading}
                 />
               </div>
               <Button type="submit" className="w-full" disabled={isLoading || isGoogleLoading}>
