@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import {
@@ -14,7 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { auth, isFirebaseConfigured } from '@/lib/firebase/client';
-import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithRedirect, getRedirectResult } from 'firebase/auth';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 
@@ -25,6 +25,36 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+
+  useEffect(() => {
+    if (!auth) return;
+    // Set loading state for potential redirect processing
+    const hasPendingRedirect = sessionStorage.getItem('pending-google-redirect');
+    if (hasPendingRedirect) {
+      setIsGoogleLoading(true);
+      sessionStorage.removeItem('pending-google-redirect');
+    }
+
+    getRedirectResult(auth)
+      .then((result) => {
+        if (result) {
+          // User successfully signed in.
+          router.push('/dashboard');
+        } else {
+           // No redirect result, so stop loading state
+           setIsGoogleLoading(false);
+        }
+      })
+      .catch((error) => {
+        toast({
+          title: 'Google Login Failed',
+          description: error.message,
+          variant: 'destructive',
+        });
+        setIsGoogleLoading(false);
+      });
+  }, [router, toast]);
+
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -62,18 +92,8 @@ export default function LoginPage() {
     }
     setIsGoogleLoading(true);
     const provider = new GoogleAuthProvider();
-    try {
-      await signInWithPopup(auth, provider);
-      router.push('/dashboard');
-    } catch (error: any) {
-      toast({
-        title: 'Google Login Failed',
-        description: error.message,
-        variant: 'destructive',
-      });
-    } finally {
-      setIsGoogleLoading(false);
-    }
+    sessionStorage.setItem('pending-google-redirect', 'true');
+    await signInWithRedirect(auth, provider);
   };
 
   return (
