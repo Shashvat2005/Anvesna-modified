@@ -75,9 +75,11 @@ export function SidebarLayout({ children }: { children: React.ReactNode }) {
                 </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
-                <SidebarMenuButton tooltip="Logout">
+                <SidebarMenuButton asChild tooltip="Logout">
+                  <Link href="/">
                     <LogOut />
                     <span className="group-data-[collapsible=icon]:hidden">Logout</span>
+                  </Link>
                 </SidebarMenuButton>
             </SidebarMenuItem>
            </SidebarMenu>
