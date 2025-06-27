@@ -8,7 +8,7 @@ import { Book, PlusCircle, Sparkles, Loader2, Calendar } from 'lucide-react';
 import { summarizeUserJournal } from '@/ai/flows/summarize-user-journal';
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from '@/context/auth-context';
-import { db } from '@/lib/firebase/client';
+import { db, isFirebaseConfigured } from '@/lib/firebase/client';
 import { collection, addDoc, query, where, orderBy, onSnapshot, serverTimestamp } from 'firebase/firestore';
 
 type JournalEntry = {
@@ -29,7 +29,7 @@ export default function JournalPage() {
     const { toast } = useToast();
 
     useEffect(() => {
-        if (!user) {
+        if (!user || !isFirebaseConfigured || !db) {
             setEntries([]);
             setIsLoadingEntries(false);
             return;
@@ -71,10 +71,10 @@ export default function JournalPage() {
             })
             return;
         }
-         if (!user) {
+         if (!user || !isFirebaseConfigured || !db) {
             toast({
-                title: "Not Authenticated",
-                description: "You must be logged in to save an entry.",
+                title: "Not Authenticated or Firebase not configured",
+                description: "You must be logged in and Firebase must be configured to save an entry.",
                 variant: "destructive",
             })
             return;
@@ -211,7 +211,7 @@ export default function JournalPage() {
                                 <CardTitle className="text-lg font-semibold flex items-center gap-2">
                                     <Calendar className="h-5 w-5 text-muted-foreground"/>
                                     Journal Entry
-                                </_CardTitle>
+                                </CardTitle>
                                 <CardDescription>{entry.createdAt ? entry.createdAt.toDate().toLocaleDateString() : 'Just now'}</CardDescription>
                             </CardHeader>
                             <CardContent>

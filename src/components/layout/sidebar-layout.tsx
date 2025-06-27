@@ -17,7 +17,7 @@ import {
 import { Bot, BookOpen, Users, Stethoscope, LayoutDashboard, LogOut, Library } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useAuth } from '@/context/auth-context';
-import { auth } from '@/lib/firebase/client';
+import { auth, isFirebaseConfigured } from '@/lib/firebase/client';
 import { useToast } from '@/hooks/use-toast';
 
 const navItems = [
@@ -36,6 +36,14 @@ export function SidebarLayout({ children }: { children: React.ReactNode }) {
   const { toast } = useToast();
 
   const handleLogout = async () => {
+    if (!isFirebaseConfigured || !auth) {
+      toast({
+        title: 'Firebase Not Configured',
+        description: 'Cannot log out.',
+        variant: 'destructive',
+      });
+      return;
+    }
     try {
       await auth.signOut();
       router.push('/');
