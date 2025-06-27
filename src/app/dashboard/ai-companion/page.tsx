@@ -16,6 +16,17 @@ type Message = {
   content: string;
 };
 
+// Mock data to simulate fetching from a database or shared state
+const mockJournalEntries = [
+  "Felt a bit overwhelmed with assignments today. Managed to finish the presentation slides, which is a relief. Tried a 5-minute meditation before bed.",
+  "Had a really nice chat with a friend from home. It's good to know I have support. Feeling more positive and hopeful about the week ahead."
+];
+
+const mockMoodData = [
+    { date: 'Mon', mood: 'Okay' },
+    { date: 'Tue', mood: 'Good' },
+];
+
 export default function AiCompanionPage() {
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -42,7 +53,13 @@ export default function AiCompanionPage() {
     setIsLoading(true);
 
     try {
-      const response = await respondToUserQuery({ query: currentInput });
+      // Pass journal and mood data to the AI flow
+      const response = await respondToUserQuery({ 
+        query: currentInput,
+        journalEntries: mockJournalEntries,
+        moodData: mockMoodData,
+      });
+
       const assistantMessage: Message = { role: 'assistant', content: response.response };
       setMessages((prev) => [...prev, assistantMessage]);
 
@@ -103,7 +120,7 @@ export default function AiCompanionPage() {
                         </div>
                     </div>
                     <CardDescription>
-                        AI-Based emotional support tailored to your mood history and daily journal entries
+                        Your AI support is personalized using insights from your journaling and mood history.
                     </CardDescription>
                 </CardHeader>
                 <CardContent className="flex-1 overflow-y-auto p-4" ref={scrollContainerRef}>
