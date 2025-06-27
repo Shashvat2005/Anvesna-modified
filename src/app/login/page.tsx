@@ -82,7 +82,7 @@ export default function LoginPage() {
   };
 
   const handleGoogleLogin = async () => {
-     if (!isFirebaseConfigured || !auth) {
+    if (!isFirebaseConfigured || !auth) {
       toast({
         title: 'Firebase Not Configured',
         description: 'Please add your Firebase credentials to the .env file.',
@@ -91,9 +91,23 @@ export default function LoginPage() {
       return;
     }
     setIsGoogleLoading(true);
-    const provider = new GoogleAuthProvider();
-    sessionStorage.setItem('pending-google-redirect', 'true');
-    await signInWithRedirect(auth, provider);
+    try {
+      const provider = new GoogleAuthProvider();
+      sessionStorage.setItem('pending-google-redirect', 'true');
+      await signInWithRedirect(auth, provider);
+    } catch (error: any) {
+      let description = error.message;
+      if (error.code === 'auth/unauthorized-domain') {
+        description = "This app's domain is not authorized. Please add the current URL to your Firebase project's 'Authorized domains' list in the Authentication settings.";
+      }
+      toast({
+        title: 'Google Login Error',
+        description: description,
+        variant: 'destructive',
+      });
+      setIsGoogleLoading(false);
+      sessionStorage.removeItem('pending-google-redirect'); // Clean up
+    }
   };
 
   return (
