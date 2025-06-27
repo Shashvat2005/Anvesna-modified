@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import {
   SidebarProvider,
   Sidebar,
@@ -16,9 +16,6 @@ import {
 } from '@/components/ui/sidebar';
 import { Bot, BookOpen, Users, Stethoscope, LayoutDashboard, LogOut, Library } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { useAuth } from '@/context/auth-context';
-import { auth, isFirebaseConfigured } from '@/lib/firebase/client';
-import { useToast } from '@/hooks/use-toast';
 
 const navItems = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -31,32 +28,6 @@ const navItems = [
 
 export function SidebarLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const router = useRouter();
-  const { user } = useAuth();
-  const { toast } = useToast();
-
-  const handleLogout = async () => {
-    if (!isFirebaseConfigured || !auth) {
-      toast({
-        title: 'Firebase Not Configured',
-        description: 'Cannot log out.',
-        variant: 'destructive',
-      });
-      return;
-    }
-    try {
-      await auth.signOut();
-      router.push('/');
-    } catch (error) {
-      toast({
-        title: 'Logout Failed',
-        description: 'There was an error logging out. Please try again.',
-        variant: 'destructive',
-      });
-    }
-  };
-
-  const userInitials = user?.displayName?.split(' ').map(n => n[0]).join('') || user?.email?.charAt(0).toUpperCase() || 'U';
   
   return (
     <SidebarProvider>
@@ -96,19 +67,15 @@ export function SidebarLayout({ children }: { children: React.ReactNode }) {
                 <SidebarMenuButton asChild tooltip="Profile">
                      <Link href="#">
                         <Avatar className="h-8 w-8">
-                            {user?.photoURL ? (
-                                <AvatarImage src={user.photoURL} alt={user.displayName || 'User'} />
-                            ) : (
-                                <AvatarImage src={`https://placehold.co/40x40.png?text=${userInitials}`} data-ai-hint="user avatar" />
-                            )}
-                            <AvatarFallback>{userInitials}</AvatarFallback>
+                            <AvatarImage src={`https://placehold.co/40x40.png?text=S`} data-ai-hint="user avatar" />
+                            <AvatarFallback>S</AvatarFallback>
                         </Avatar>
-                        <span className="truncate group-data-[collapsible=icon]:hidden">{user?.displayName || user?.email || 'Student'}</span>
+                        <span className="truncate group-data-[collapsible=icon]:hidden">Student</span>
                     </Link>
                 </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
-                <SidebarMenuButton onClick={handleLogout} tooltip="Logout">
+                <SidebarMenuButton tooltip="Logout">
                     <LogOut />
                     <span className="group-data-[collapsible=icon]:hidden">Logout</span>
                 </SidebarMenuButton>

@@ -5,7 +5,6 @@ import Link from "next/link";
 import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { useAuth } from "@/context/auth-context";
 
 const navLinks = [
   { href: "/about", label: "About Anvesna" },
@@ -16,7 +15,6 @@ const navLinks = [
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { user, loading } = useAuth();
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -38,24 +36,12 @@ export function Header() {
           ))}
         </nav>
         <div className="hidden md:flex items-center space-x-4">
-          {!loading && (
-            <>
-              {user ? (
-                <Button asChild>
-                  <Link href="/dashboard">Go to Dashboard</Link>
-                </Button>
-              ) : (
-                <>
-                  <Button variant="ghost" asChild>
-                    <Link href="/login">Log In</Link>
-                  </Button>
-                  <Button asChild>
-                    <Link href="/signup">Start Your Journey</Link>
-                  </Button>
-                </>
-              )}
-            </>
-          )}
+          <Button variant="ghost" asChild>
+            <Link href="/login">Log In</Link>
+          </Button>
+          <Button asChild>
+            <Link href="/signup">Start Your Journey</Link>
+          </Button>
         </div>
         <div className="md:hidden">
           <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
@@ -89,24 +75,12 @@ export function Header() {
                     ))}
                   </nav>
                   <div className="mt-auto flex flex-col space-y-4">
-                    {!loading && (
-                      <>
-                        {user ? (
-                          <Button asChild>
-                            <Link href="/dashboard" onClick={() => setIsMenuOpen(false)}>Go to Dashboard</Link>
-                          </Button>
-                        ) : (
-                          <>
-                            <Button variant="ghost" asChild>
-                              <Link href="/login" onClick={() => setIsMenuOpen(false)}>Log In</Link>
-                            </Button>
-                            <Button asChild>
-                              <Link href="/signup" onClick={() => setIsMenuOpen(false)}>Start Your Journey</Link>
-                            </Button>
-                          </>
-                        )}
-                      </>
-                    )}
+                    <Button variant="ghost" asChild>
+                      <Link href="/login" onClick={() => setIsMenuOpen(false)}>Log In</Link>
+                    </Button>
+                    <Button asChild>
+                      <Link href="/signup" onClick={() => setIsMenuOpen(false)}>Start Your Journey</Link>
+                    </Button>
                   </div>
                 </div>
             </SheetContent>

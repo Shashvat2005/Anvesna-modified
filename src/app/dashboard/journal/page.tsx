@@ -1,68 +1,32 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { Book, PlusCircle, Sparkles, Loader2, Calendar } from 'lucide-react';
 import { summarizeUserJournal } from '@/ai/flows/summarize-user-journal';
 import { useToast } from "@/hooks/use-toast";
-import { useAuth } from '@/context/auth-context';
-import { db, isFirebaseConfigured } from '@/lib/firebase/client';
-import { collection, addDoc, query, where, orderBy, onSnapshot, serverTimestamp } from 'firebase/firestore';
 
 type JournalEntry = {
-  id: string;
+  id: number;
   content: string;
-  createdAt: {
-    toDate: () => Date;
-  } | null;
+  createdAt: Date;
 };
 
+const mockEntries: JournalEntry[] = [
+    { id: 1, content: "Felt a bit overwhelmed with assignments today. Managed to finish the presentation slides, which is a relief. Tried a 5-minute meditation before bed.", createdAt: new Date(new Date().setDate(new Date().getDate() - 2)) },
+    { id: 2, content: "Had a really nice chat with a friend from home. It's good to know I have support. Feeling more positive and hopeful about the week ahead.", createdAt: new Date(new Date().setDate(new Date().getDate() - 1)) },
+]
+
 export default function JournalPage() {
-    const { user } = useAuth();
-    const [entries, setEntries] = useState<JournalEntry[]>([]);
+    const [entries, setEntries] = useState<JournalEntry[]>(mockEntries);
     const [newEntry, setNewEntry] = useState('');
     const [summary, setSummary] = useState('');
     const [isSummarizing, setIsSummarizing] = useState(false);
-    const [isLoadingEntries, setIsLoadingEntries] = useState(true);
     const { toast } = useToast();
 
-    useEffect(() => {
-        if (!user || !isFirebaseConfigured || !db) {
-            setEntries([]);
-            setIsLoadingEntries(false);
-            return;
-        }
-
-        setIsLoadingEntries(true);
-        const q = query(
-            collection(db, 'journalEntries'), 
-            where('userId', '==', user.uid), 
-            orderBy('createdAt', 'desc')
-        );
-
-        const unsubscribe = onSnapshot(q, (querySnapshot) => {
-            const userEntries: JournalEntry[] = [];
-            querySnapshot.forEach((doc) => {
-                userEntries.push({ id: doc.id, ...doc.data() } as JournalEntry);
-            });
-            setEntries(userEntries);
-            setIsLoadingEntries(false);
-        }, (error) => {
-            console.error("Error fetching journal entries:", error);
-            toast({
-                title: "Error",
-                description: "Could not fetch journal entries.",
-                variant: "destructive",
-            });
-            setIsLoadingEntries(false);
-        });
-
-        return () => unsubscribe();
-    }, [user, toast]);
-
-    const handleSaveEntry = async () => {
+    const handleSaveEntry = () => {
         if (!newEntry.trim()) {
             toast({
                 title: "Empty Entry",
@@ -71,35 +35,19 @@ export default function JournalPage() {
             })
             return;
         }
-         if (!user || !isFirebaseConfigured || !db) {
-            toast({
-                title: "Not Authenticated or Firebase not configured",
-                description: "You must be logged in and Firebase must be configured to save an entry.",
-                variant: "destructive",
-            })
-            return;
-        }
 
-        try {
-            await addDoc(collection(db, 'journalEntries'), {
-                userId: user.uid,
-                content: newEntry,
-                createdAt: serverTimestamp(),
-            });
+        const entry: JournalEntry = {
+            id: Date.now(),
+            content: newEntry,
+            createdAt: new Date(),
+        };
 
-            setNewEntry('');
-            toast({
-                title: "Entry Saved",
-                description: "Your journal entry has been successfully saved.",
-            })
-        } catch (error) {
-             console.error("Error saving entry:", error);
-            toast({
-                title: "Save Failed",
-                description: "Could not save your journal entry. Please try again.",
-                variant: "destructive",
-            });
-        }
+        setEntries([entry, ...entries]);
+        setNewEntry('');
+        toast({
+            title: "Entry Saved",
+            description: "Your journal entry has been successfully saved.",
+        })
     };
 
     const handleSummarize = async () => {
@@ -115,7 +63,7 @@ export default function JournalPage() {
             return;
         }
         try {
-            const allEntries = entries.map(e => `Date: ${e.createdAt?.toDate().toLocaleDateString() || 'N/A'}\n${e.content}`).join('\n\n---\n\n');
+            const allEntries = entries.map(e => `Date: ${e.createdAt.toLocaleDateString()}\n${e.content}`).join('\n\n---\n\n');
             const result = await summarizeUserJournal({
                 journalEntries: allEntries,
                 period: 'recent entries'
@@ -200,19 +148,14 @@ export default function JournalPage() {
 
                 <div className="space-y-4">
                     <h2 className="font-headline text-2xl font-bold text-foreground">Past Entries</h2>
-                    {isLoadingEntries ? (
-                         <div className="text-center py-8">
-                          <Loader2 className="h-6 w-6 animate-spin mx-auto text-muted-foreground" />
-                          <p className="text-muted-foreground mt-2">Loading entries...</p>
-                        </div>
-                    ) : entries.length > 0 ? entries.map(entry => (
+                    {entries.length > 0 ? entries.map(entry => (
                         <Card key={entry.id} className="shadow-md">
                             <CardHeader>
                                 <CardTitle className="text-lg font-semibold flex items-center gap-2">
                                     <Calendar className="h-5 w-5 text-muted-foreground"/>
                                     Journal Entry
                                 </CardTitle>
-                                <CardDescription>{entry.createdAt ? entry.createdAt.toDate().toLocaleDateString() : 'Just now'}</CardDescription>
+                                <CardDescription>{entry.createdAt.toLocaleDateString()}</CardDescription>
                             </CardHeader>
                             <CardContent>
                                 <p className="text-sm text-muted-foreground whitespace-pre-wrap">{entry.content}</p>

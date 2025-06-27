@@ -12,6 +12,7 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
+// Check if all required environment variables are set
 const isFirebaseConfigured = Object.values(firebaseConfig).every(
   (value) => !!value
 );
@@ -20,11 +21,13 @@ let app: FirebaseApp | null = null;
 let auth: Auth | null = null;
 let db: Firestore | null = null;
 
+// Initialize Firebase only if the configuration is complete
 if (isFirebaseConfigured) {
   app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
   auth = getAuth(app);
   db = getFirestore(app);
 } else {
+  // Add a console warning in the browser if Firebase is not configured
   if (typeof window !== 'undefined') {
     console.warn(
       'Firebase configuration is incomplete. Firebase features will be disabled. Please add your Firebase credentials to the .env file.'

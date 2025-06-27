@@ -1,9 +1,10 @@
 'use client';
 
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { User, onAuthStateChanged } from 'firebase/auth';
-import { auth, isFirebaseConfigured } from '@/lib/firebase/client';
-import { Skeleton } from '@/components/ui/skeleton';
+import { createContext, useContext, ReactNode } from 'react';
+import type { User } from 'firebase/auth';
+
+// This is a mock context for a non-database version of the app.
+// It provides a null user and loading=false state.
 
 type AuthContextType = {
   user: User | null;
@@ -12,29 +13,13 @@ type AuthContextType = {
 
 const AuthContext = createContext<AuthContextType>({
   user: null,
-  loading: true,
+  loading: false,
 });
 
 export const useAuth = () => useContext(AuthContext);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    if (!isFirebaseConfigured || !auth) {
-      setLoading(false);
-      return;
-    }
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUser(user);
-      setLoading(false);
-    });
-
-    return () => unsubscribe();
-  }, []);
-
-  const value = { user, loading };
+  const value = { user: null, loading: false };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
