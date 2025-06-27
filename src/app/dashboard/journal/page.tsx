@@ -6,39 +6,63 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Textarea } from '@/components/ui/textarea';
 import { Book, PlusCircle, Sparkles, Loader2, Calendar } from 'lucide-react';
 import { summarizeUserJournal } from '@/ai/flows/summarize-user-journal';
-import { useToast } from "@/hooks/use-toast"
+import { useToast } from "@/hooks/use-toast";
+import { useAuth } from '@/context/auth-context';
+import { db } from '@/lib/firebase/client';
+import { collection, addDoc, query, where, orderBy, onSnapshot, serverTimestamp } from 'firebase/firestore';
 
 type JournalEntry = {
-  id: number;
-  date: string;
+  id: string;
   content: string;
+  createdAt: {
+    toDate: () => Date;
+  } | null;
 };
 
 export default function JournalPage() {
+    const { user } = useAuth();
     const [entries, setEntries] = useState<JournalEntry[]>([]);
     const [newEntry, setNewEntry] = useState('');
     const [summary, setSummary] = useState('');
     const [isSummarizing, setIsSummarizing] = useState(false);
+    const [isLoadingEntries, setIsLoadingEntries] = useState(true);
     const { toast } = useToast();
 
     useEffect(() => {
-        // This is to avoid hydration mismatch
-        const initialEntries: JournalEntry[] = [
-            {
-                id: 1,
-                date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toLocaleDateString(),
-                content: "Felt a bit overwhelmed with assignments today. Managed to finish the presentation slides, which is a relief. Tried a 5-minute meditation before bed."
-            },
-            {
-                id: 2,
-                date: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toLocaleDateString(),
-                content: "Had a really nice chat with a friend from home. It's good to know I have support. Feeling more positive and hopeful about the week ahead."
-            }
-        ];
-        setEntries(initialEntries);
-    }, []);
+        if (!user) {
+            setEntries([]);
+            setIsLoadingEntries(false);
+            return;
+        }
 
-    const handleSaveEntry = () => {
+        setIsLoadingEntries(true);
+        const q = query(
+            collection(db, 'journalEntries'), 
+            where('userId', '==', user.uid), 
+            orderBy('createdAt', 'desc')
+        );
+
+        const unsubscribe = onSnapshot(q, (querySnapshot) => {
+            const userEntries: JournalEntry[] = [];
+            querySnapshot.forEach((doc) => {
+                userEntries.push({ id: doc.id, ...doc.data() } as JournalEntry);
+            });
+            setEntries(userEntries);
+            setIsLoadingEntries(false);
+        }, (error) => {
+            console.error("Error fetching journal entries:", error);
+            toast({
+                title: "Error",
+                description: "Could not fetch journal entries.",
+                variant: "destructive",
+            });
+            setIsLoadingEntries(false);
+        });
+
+        return () => unsubscribe();
+    }, [user, toast]);
+
+    const handleSaveEntry = async () => {
         if (!newEntry.trim()) {
             toast({
                 title: "Empty Entry",
@@ -47,24 +71,51 @@ export default function JournalPage() {
             })
             return;
         }
-        const entry: JournalEntry = {
-            id: entries.length + 1,
-            date: new Date().toLocaleDateString(),
-            content: newEntry,
-        };
-        setEntries([entry, ...entries]);
-        setNewEntry('');
-        toast({
-            title: "Entry Saved",
-            description: "Your journal entry has been successfully saved.",
-        })
+         if (!user) {
+            toast({
+                title: "Not Authenticated",
+                description: "You must be logged in to save an entry.",
+                variant: "destructive",
+            })
+            return;
+        }
+
+        try {
+            await addDoc(collection(db, 'journalEntries'), {
+                userId: user.uid,
+                content: newEntry,
+                createdAt: serverTimestamp(),
+            });
+
+            setNewEntry('');
+            toast({
+                title: "Entry Saved",
+                description: "Your journal entry has been successfully saved.",
+            })
+        } catch (error) {
+             console.error("Error saving entry:", error);
+            toast({
+                title: "Save Failed",
+                description: "Could not save your journal entry. Please try again.",
+                variant: "destructive",
+            });
+        }
     };
 
     const handleSummarize = async () => {
         setIsSummarizing(true);
         setSummary('');
+         if (entries.length === 0) {
+            toast({
+                title: "No Entries",
+                description: "You need at least one journal entry to generate a summary.",
+                variant: "destructive",
+            });
+            setIsSummarizing(false);
+            return;
+        }
         try {
-            const allEntries = entries.map(e => `Date: ${e.date}\n${e.content}`).join('\n\n---\n\n');
+            const allEntries = entries.map(e => `Date: ${e.createdAt?.toDate().toLocaleDateString() || 'N/A'}\n${e.content}`).join('\n\n---\n\n');
             const result = await summarizeUserJournal({
                 journalEntries: allEntries,
                 period: 'recent entries'
@@ -123,7 +174,7 @@ export default function JournalPage() {
                                 <Sparkles className="text-primary"/>
                                 AI-Powered Summary
                             </div>
-                            <Button variant="outline" onClick={handleSummarize} disabled={isSummarizing}>
+                            <Button variant="outline" onClick={handleSummarize} disabled={isSummarizing || entries.length === 0}>
                                 {isSummarizing ? (
                                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                                 ) : (
@@ -149,14 +200,19 @@ export default function JournalPage() {
 
                 <div className="space-y-4">
                     <h2 className="font-headline text-2xl font-bold text-foreground">Past Entries</h2>
-                    {entries.length > 0 ? entries.map(entry => (
+                    {isLoadingEntries ? (
+                         <div className="text-center py-8">
+                          <Loader2 className="h-6 w-6 animate-spin mx-auto text-muted-foreground" />
+                          <p className="text-muted-foreground mt-2">Loading entries...</p>
+                        </div>
+                    ) : entries.length > 0 ? entries.map(entry => (
                         <Card key={entry.id} className="shadow-md">
                             <CardHeader>
                                 <CardTitle className="text-lg font-semibold flex items-center gap-2">
                                     <Calendar className="h-5 w-5 text-muted-foreground"/>
                                     Journal Entry
-                                </CardTitle>
-                                <CardDescription>{entry.date}</CardDescription>
+                                </_CardTitle>
+                                <CardDescription>{entry.createdAt ? entry.createdAt.toDate().toLocaleDateString() : 'Just now'}</CardDescription>
                             </CardHeader>
                             <CardContent>
                                 <p className="text-sm text-muted-foreground whitespace-pre-wrap">{entry.content}</p>
@@ -164,7 +220,9 @@ export default function JournalPage() {
                         </Card>
                     )) : (
                         <div className="text-center py-8">
-                          <p className="text-muted-foreground">Loading entries...</p>
+                           <Book className="mx-auto h-12 w-12 text-muted-foreground" />
+                          <p className="mt-4 text-muted-foreground">You haven't written any journal entries yet.</p>
+                          <p className="text-sm text-muted-foreground">Start by writing a new entry above.</p>
                         </div>
                     )}
                 </div>
