@@ -1,19 +1,12 @@
-'use client';
-
 import Link from "next/link";
-import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 
 export function Cta() {
   return (
     <section className="bg-background">
       <div className="container mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
-        <motion.div
+        <div
           className="relative isolate overflow-hidden bg-primary/90 px-6 py-24 text-center shadow-2xl rounded-2xl sm:px-16"
-          initial={{ opacity: 0, scale: 0.9 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true, amount: 0.5 }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
         >
           <h2
             className="font-headline mx-auto max-w-2xl text-3xl font-bold tracking-tight text-white sm:text-4xl"
@@ -32,7 +25,7 @@ export function Cta() {
               <Link href="/signup">Start Your Wellness Journey</Link>
             </Button>
           </div>
-        </motion.div>
+        </div>
       </div>
     </section>
   );
