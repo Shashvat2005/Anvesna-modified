@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Bot, User, Send, Loader2, Volume2, VolumeX, Microphone } from 'lucide-react';
+import { Bot, User, Send, Loader2, Volume2, VolumeX, Mic } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { respondToUserQuery, RespondToUserQueryInput } from '@/ai/flows/respond-to-user-query';
 import { textToSpeech } from '@/ai/flows/text-to-speech';
@@ -337,7 +337,7 @@ export default function AiCompanionPage() {
                             disabled={isLoading || isInitialLoading}
                             className={isListening ? 'text-primary ring-2 ring-primary animate-pulse' : ''}
                         >
-                            <Microphone className="h-5 w-5" />
+                            <Mic className="h-5 w-5" />
                             <span className="sr-only">{isListening ? 'Stop listening' : 'Use microphone'}</span>
                         </Button>
                         <Button type="submit" disabled={isLoading || isInitialLoading || !input.trim()}>
