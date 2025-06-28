@@ -1,6 +1,29 @@
 'use client';
 
-import { motion } from "framer-motion";
+import { motion, useInView, useMotionValue, useSpring, useTransform } from "framer-motion";
+import { useEffect, useRef } from "react";
+
+function AnimatedNumber({ value, hasPercent }: { value: number; hasPercent?: boolean }) {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, amount: 0.5 });
+  const motionValue = useMotionValue(0);
+  const springValue = useSpring(motionValue, {
+    damping: 50,
+    stiffness: 100,
+  });
+  const transformed = useTransform(springValue, (latest) => {
+    return `${Math.round(latest)}${hasPercent ? '%' : ''}`;
+  });
+
+  useEffect(() => {
+    if (isInView) {
+      motionValue.set(value);
+    }
+  }, [motionValue, isInView, value]);
+
+  return <motion.span ref={ref}>{transformed}</motion.span>;
+}
+
 
 export function Stats() {
   const stats = [
@@ -28,16 +51,21 @@ export function Stats() {
     >
       <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 gap-12 text-center md:grid-cols-3 md:gap-8">
-          {stats.map((stat, index) => (
-            <div key={index} className="flex flex-col items-center">
-              <p className="font-headline text-5xl font-bold tracking-tight text-white sm:text-6xl">
-                {stat.value}
-              </p>
-              <p className="mt-4 max-w-xs text-base text-primary-foreground/80">
-                {stat.label}
-              </p>
-            </div>
-          ))}
+          {stats.map((stat, index) => {
+            const hasPercent = stat.value.includes('%');
+            const numericValue = parseInt(stat.value.replace('%', ''), 10);
+
+            return (
+              <div key={index} className="flex flex-col items-center">
+                <p className="font-headline text-5xl font-bold tracking-tight text-white sm:text-6xl">
+                  <AnimatedNumber value={numericValue} hasPercent={hasPercent} />
+                </p>
+                <p className="mt-4 max-w-xs text-base text-primary-foreground/80">
+                  {stat.label}
+                </p>
+              </div>
+            )
+          })}
         </div>
       </div>
     </motion.section>
