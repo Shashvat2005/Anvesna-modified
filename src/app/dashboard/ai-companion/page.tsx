@@ -23,7 +23,7 @@ export default function AiCompanionPage() {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: 'assistant',
-      content: "Hello! I'm your AI companion. How are you feeling today? Feel free to share what's on your mind.",
+      content: "Hello! I'm Anvesna, your companion. How are you feeling today? Feel free to share what's on your mind.",
     },
   ]);
   const [input, setInput] = useState('');
