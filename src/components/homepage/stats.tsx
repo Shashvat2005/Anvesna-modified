@@ -41,11 +41,6 @@ export function Stats() {
     },
   ];
 
-  const itemVariants = {
-      hidden: { opacity: 0, y: 20 },
-      visible: { opacity: 1, y: 0, transition: { duration: 0.5, delay: 0.2 } },
-  };
-
   return (
     <motion.section
       className="bg-primary text-primary-foreground py-16 sm:py-24"
@@ -65,15 +60,9 @@ export function Stats() {
                 <p className="font-headline text-5xl font-bold tracking-tight text-white sm:text-6xl">
                   <AnimatedNumber value={numericValue} hasPercent={hasPercent} />
                 </p>
-                <motion.p
-                  className="mt-4 max-w-xs text-base text-primary-foreground/80"
-                  variants={itemVariants}
-                  initial="hidden"
-                  whileInView="visible"
-                  viewport={{ once: true }}
-                >
+                <p className="mt-4 max-w-xs text-base text-primary-foreground/80">
                   {stat.label}
-                </motion.p>
+                </p>
               </div>
             )
           })}
