@@ -1,3 +1,7 @@
+'use client';
+
+import { motion } from "framer-motion";
+
 export function Stats() {
   const stats = [
     {
@@ -15,7 +19,13 @@ export function Stats() {
   ];
 
   return (
-    <section className="bg-primary text-primary-foreground py-16 sm:py-24">
+    <motion.section
+      className="bg-primary text-primary-foreground py-16 sm:py-24"
+      initial={{ opacity: 0 }}
+      whileInView={{ opacity: 1 }}
+      viewport={{ once: true, amount: 0.5 }}
+      transition={{ duration: 0.5 }}
+    >
       <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 gap-12 text-center md:grid-cols-3 md:gap-8">
           {stats.map((stat, index) => (
@@ -30,6 +40,6 @@ export function Stats() {
           ))}
         </div>
       </div>
-    </section>
+    </motion.section>
   );
 }

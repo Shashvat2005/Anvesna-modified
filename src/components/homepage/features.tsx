@@ -1,4 +1,7 @@
+'use client';
+
 import Image from 'next/image';
+import { motion } from 'framer-motion';
 import { Lightbulb, Users, Lock, Stethoscope } from 'lucide-react';
 
 const features = [
@@ -33,21 +36,46 @@ const features = [
 ];
 
 export function Features() {
+  const textVariants = (fromLeft: boolean) => ({
+    hidden: { opacity: 0, x: fromLeft ? -50 : 50 },
+    visible: { opacity: 1, x: 0, transition: { duration: 0.6, ease: "easeOut" } }
+  });
+
+  const imageVariants = (fromLeft: boolean) => ({
+    hidden: { opacity: 0, x: fromLeft ? -50 : 50 },
+    visible: { opacity: 1, x: 0, transition: { duration: 0.6, ease: "easeOut" } }
+  });
+
   return (
     <section className="bg-background py-16 sm:py-24">
       <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="text-center">
+        <motion.div
+          className="text-center"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.5 }}
+          transition={{ duration: 0.5 }}
+        >
           <h2 className="font-headline text-3xl font-bold tracking-tight sm:text-4xl">
             Tools Designed for Your Wellness
           </h2>
           <p className="mt-4 max-w-2xl mx-auto text-lg text-muted-foreground">
             Explore the features that make Anvesna a unique and powerful companion on your mental health journey.
           </p>
-        </div>
+        </motion.div>
         <div className="mt-16 space-y-16">
           {features.map((feature, index) => (
-            <div key={feature.name} className="grid items-center gap-8 lg:grid-cols-2 lg:gap-16">
-              <div className={`flex justify-center ${index % 2 === 0 ? 'lg:order-last' : ''}`}>
+            <motion.div
+              key={feature.name}
+              className="grid items-center gap-8 lg:grid-cols-2 lg:gap-16"
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.3 }}
+            >
+              <motion.div
+                className={`flex justify-center ${index % 2 === 0 ? 'lg:order-last' : ''}`}
+                variants={imageVariants(index % 2 === 0)}
+              >
                 <Image
                   src={feature.image}
                   alt={`${feature.name} feature screenshot`}
@@ -56,8 +84,11 @@ export function Features() {
                   className="rounded-lg shadow-xl"
                   data-ai-hint={feature.dataAiHint}
                 />
-              </div>
-              <div className="text-center lg:text-left">
+              </motion.div>
+              <motion.div
+                className="text-center lg:text-left"
+                variants={textVariants(index % 2 !== 0)}
+              >
                 <div className="flex items-center justify-center lg:justify-start gap-3">
                   <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary text-primary-foreground">
                     <feature.icon className="h-6 w-6" aria-hidden="true" />
@@ -67,8 +98,8 @@ export function Features() {
                 <p className="mt-4 text-lg text-muted-foreground">
                   {feature.description}
                 </p>
-              </div>
-            </div>
+              </motion.div>
+            </motion.div>
           ))}
         </div>
       </div>
