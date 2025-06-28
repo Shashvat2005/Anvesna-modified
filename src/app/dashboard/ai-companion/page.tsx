@@ -21,36 +21,59 @@ const JOURNAL_STORAGE_KEY = 'anvesna-journal-entries';
 const MOOD_STORAGE_KEY = 'anvesna-mood-history';
 
 export default function AiCompanionPage() {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      role: 'assistant',
-      content: "Hello! I'm Anvesna, your companion. How are you feeling today? Feel free to share what's on your mind.",
-    },
-  ]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isTtsEnabled, setIsTtsEnabled] = useState(false);
   const [isTtsLoading, setIsTtsLoading] = useState(false);
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
   
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
   const { toast } = useToast();
 
   useEffect(() => {
-    // This effect runs once on mount to set a more personalized initial greeting if possible.
-    try {
-      const savedEntriesJSON = localStorage.getItem(JOURNAL_STORAGE_KEY);
-      if (savedEntriesJSON) {
-        const entries = JSON.parse(savedEntriesJSON);
-        if (entries && entries.length > 0) {
-          const awareMessage = "Hey, I've had a chance to read your recent journal entries. Just wanted you to know I'm here to listen if you feel like talking.";
-          setMessages([{ role: 'assistant', content: awareMessage }]);
+    // This effect runs once on mount to set a personalized initial greeting.
+    const getInitialGreeting = async () => {
+        setIsInitialLoading(true);
+        const defaultGreeting = { role: 'assistant', content: "Hello! I'm Anvesna, your companion. How are you feeling today? Feel free to share what's on your mind." };
+        
+        try {
+            const savedEntriesJSON = localStorage.getItem(JOURNAL_STORAGE_KEY);
+            const savedMoodsJSON = localStorage.getItem(MOOD_STORAGE_KEY);
+
+            if (savedEntriesJSON || savedMoodsJSON) {
+                const aiContext: RespondToUserQueryInput = { query: '__INITIAL_GREETING__' };
+                
+                if (savedEntriesJSON) {
+                    aiContext.journalEntries = JSON.parse(savedEntriesJSON).map((entry: { content: string }) => entry.content);
+                }
+                if (savedMoodsJSON) {
+                    aiContext.moodData = JSON.parse(savedMoodsJSON).map((entry: {date: string, mood: string}) => ({
+                        date: new Date(entry.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }),
+                        mood: entry.mood
+                    }));
+                }
+                
+                // Only call AI if there's actually context
+                if (aiContext.journalEntries?.length || aiContext.moodData?.length) {
+                    const response = await respondToUserQuery(aiContext);
+                    setMessages([{ role: 'assistant', content: response.response }]);
+                } else {
+                   setMessages([defaultGreeting]);
+                }
+            } else {
+                setMessages([defaultGreeting]);
+            }
+        } catch (error) {
+            console.error("Could not generate or load initial greeting.", error);
+            setMessages([defaultGreeting]);
+        } finally {
+            setIsInitialLoading(false);
         }
-      }
-    } catch (error) {
-      console.error("Could not load journal entries for initial greeting.", error);
-      // If there's an error, we just stick with the default message.
-    }
+    };
+    
+    getInitialGreeting();
   }, []); // Empty dependency array ensures this runs once on mount.
 
   const handleSendMessage = async (e: React.FormEvent) => {
@@ -132,7 +155,7 @@ export default function AiCompanionPage() {
     if (scrollContainerRef.current) {
         scrollContainerRef.current.scrollTop = scrollContainerRef.current.scrollHeight;
     }
-  }, [messages, isLoading]);
+  }, [messages, isLoading, isInitialLoading]);
 
 
   return (
@@ -163,7 +186,20 @@ export default function AiCompanionPage() {
                 </CardHeader>
                 <CardContent className="flex-1 overflow-y-auto p-4" ref={scrollContainerRef}>
                     <div className="space-y-6">
-                        {messages.map((message, index) => (
+                        {isInitialLoading && (
+                            <div className="flex items-start gap-3 justify-start">
+                                <Avatar className="h-8 w-8">
+                                    <AvatarFallback className="bg-primary/20">
+                                        <Bot className="text-primary h-5 w-5" />
+                                    </AvatarFallback>
+                                </Avatar>
+                                <div className="max-w-sm rounded-lg p-3 bg-muted flex items-center space-x-2">
+                                    <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+                                    <p className="text-sm text-muted-foreground">Thinking...</p>
+                                </div>
+                            </div>
+                        )}
+                        {!isInitialLoading && messages.map((message, index) => (
                             <div
                                 key={index}
                                 className={`flex items-start gap-3 ${
@@ -216,10 +252,10 @@ export default function AiCompanionPage() {
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
                             placeholder="Type your message..."
-                            disabled={isLoading}
+                            disabled={isLoading || isInitialLoading}
                             className="flex-1"
                         />
-                        <Button type="submit" disabled={isLoading || !input.trim()}>
+                        <Button type="submit" disabled={isLoading || isInitialLoading || !input.trim()}>
                             {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5" />}
                             <span className="sr-only">Send</span>
                         </Button>
