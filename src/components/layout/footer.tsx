@@ -66,7 +66,7 @@ export function Footer() {
           </div>
         </div>
         <div className="mt-8 border-t pt-8 text-center text-sm text-muted-foreground">
-          <p>&copy; {new Date().getFullYear()} Anvesna Wellness. All rights reserved.</p>
+          <p>&copy; 2024 Anvesna. All rights reserved. | Made with ❤️ from India for the world.</p>
           <p className="mt-2">If you are in a crisis, please call 911 or go to your nearest emergency room.</p>
         </div>
       </div>
