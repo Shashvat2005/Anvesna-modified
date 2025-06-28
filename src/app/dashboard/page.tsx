@@ -99,10 +99,10 @@ export default function DashboardPage() {
                     <Button
                       key={mood.name}
                       variant={selectedMood === mood.name ? 'default' : 'outline'}
-                      className={`flex flex-col h-24 w-24 rounded-lg items-center justify-center gap-2 transition-all ${selectedMood === mood.name ? 'ring-2 ring-primary ring-offset-2' : ''}`}
+                      className={`flex flex-col h-28 w-28 rounded-lg items-center justify-center gap-2 transition-all ${selectedMood === mood.name ? 'ring-2 ring-primary ring-offset-2' : ''}`}
                       onClick={() => setSelectedMood(mood.name)}
                     >
-                      <mood.icon className="h-8 w-8" />
+                      <mood.icon className="h-12 w-12" />
                       <span className="text-sm">{mood.name}</span>
                     </Button>
                   ))}
