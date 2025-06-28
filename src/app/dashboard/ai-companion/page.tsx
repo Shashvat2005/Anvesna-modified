@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Bot, User, Send, Loader2, Volume2, VolumeX } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { respondToUserQuery } from '@/ai/flows/respond-to-user-query';
+import { respondToUserQuery, RespondToUserQueryInput } from '@/ai/flows/respond-to-user-query';
 import { textToSpeech } from '@/ai/flows/text-to-speech';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
@@ -16,16 +16,8 @@ type Message = {
   content: string;
 };
 
-// Mock data to simulate fetching from a database or shared state
-const mockJournalEntries = [
-  "Felt a bit overwhelmed with assignments today. Managed to finish the presentation slides, which is a relief. Tried a 5-minute meditation before bed.",
-  "Had a really nice chat with a friend from home. It's good to know I have support. Feeling more positive and hopeful about the week ahead."
-];
-
-const mockMoodData = [
-    { date: 'Mon', mood: 'Okay' },
-    { date: 'Tue', mood: 'Good' },
-];
+const JOURNAL_STORAGE_KEY = 'anvesna-journal-entries';
+const MOOD_STORAGE_KEY = 'anvesna-mood-history';
 
 export default function AiCompanionPage() {
   const [messages, setMessages] = useState<Message[]>([
@@ -53,12 +45,28 @@ export default function AiCompanionPage() {
     setIsLoading(true);
 
     try {
-      // Pass journal and mood data to the AI flow
-      const response = await respondToUserQuery({ 
-        query: currentInput,
-        journalEntries: mockJournalEntries,
-        moodData: mockMoodData,
-      });
+      // Get latest journal and mood data from localStorage
+      const aiContext: RespondToUserQueryInput = { query: currentInput };
+
+      try {
+        const savedEntriesJSON = localStorage.getItem(JOURNAL_STORAGE_KEY);
+        if (savedEntriesJSON) {
+          aiContext.journalEntries = JSON.parse(savedEntriesJSON).map((entry: { content: string }) => entry.content);
+        }
+
+        const savedMoodsJSON = localStorage.getItem(MOOD_STORAGE_KEY);
+        if (savedMoodsJSON) {
+          aiContext.moodData = JSON.parse(savedMoodsJSON).map((entry: {date: string, mood: string}) => ({
+            date: new Date(entry.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }),
+            mood: entry.mood
+          }));
+        }
+      } catch (error) {
+          console.error("Failed to load context from localStorage for AI", error);
+          // Continue without context if localStorage fails
+      }
+
+      const response = await respondToUserQuery(aiContext);
 
       const assistantMessage: Message = { role: 'assistant', content: response.response };
       setMessages((prev) => [...prev, assistantMessage]);

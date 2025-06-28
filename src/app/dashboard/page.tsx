@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Bot, BookOpen, Users, Stethoscope, Smile, Meh, Frown, Laugh, Angry, TrendingUp, BarChart as BarChartIcon, Sun } from 'lucide-react';
 import Link from 'next/link';
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip } from 'recharts';
+import { useToast } from '@/hooks/use-toast';
 
 const moodOptions = [
   { name: 'Happy', icon: Laugh },
@@ -61,9 +62,12 @@ const moodData = [
     { date: 'Sun', mood: 4 },
 ];
 
+const MOOD_STORAGE_KEY = 'anvesna-mood-history';
+
 export default function DashboardPage() {
   const [selectedMood, setSelectedMood] = useState<string | null>(null);
   const [affirmation, setAffirmation] = useState('');
+  const { toast } = useToast();
 
   useEffect(() => {
     const affirmations = [
@@ -74,7 +78,52 @@ export default function DashboardPage() {
       "Believe in yourself and all that you are."
     ];
     setAffirmation(affirmations[Math.floor(Math.random() * affirmations.length)]);
+
+    // Check if mood for today was already logged
+    try {
+        const moodHistoryJSON = localStorage.getItem(MOOD_STORAGE_KEY);
+        if (moodHistoryJSON) {
+            const moodHistory = JSON.parse(moodHistoryJSON);
+            const todayStr = new Date().toLocaleDateString();
+            const todaysMood = moodHistory.find((entry: any) => new Date(entry.date).toLocaleDateString() === todayStr);
+            if (todaysMood) {
+                setSelectedMood(todaysMood.mood);
+            }
+        }
+    } catch (error) {
+        console.error("Failed to load mood history from localStorage", error);
+    }
   }, []);
+
+  const handleMoodSelection = (moodName: string) => {
+    setSelectedMood(moodName);
+    try {
+        const todayStr = new Date().toLocaleDateString();
+        const moodHistoryJSON = localStorage.getItem(MOOD_STORAGE_KEY);
+        let moodHistory = moodHistoryJSON ? JSON.parse(moodHistoryJSON) : [];
+        
+        // Remove today's entry if it exists, to replace it with the new one
+        const filteredHistory = moodHistory.filter((entry: any) => new Date(entry.date).toLocaleDateString() !== todayStr);
+        
+        const newEntry = { date: new Date().toISOString(), mood: moodName };
+        const updatedHistory = [...filteredHistory, newEntry];
+
+        localStorage.setItem(MOOD_STORAGE_KEY, JSON.stringify(updatedHistory));
+        
+        toast({
+            title: "Mood Logged",
+            description: `You've logged your mood as "${moodName}". Thank you for sharing.`,
+        });
+
+    } catch (error) {
+        console.error("Failed to save mood to localStorage", error);
+        toast({
+            title: "Error",
+            description: "Could not save your mood. Please try again.",
+            variant: "destructive",
+        });
+    }
+  };
 
   return (
     <div className="bg-muted/40 min-h-[calc(100vh-4rem)] p-4 sm:p-6 lg:p-8">
@@ -100,7 +149,7 @@ export default function DashboardPage() {
                       key={mood.name}
                       variant={selectedMood === mood.name ? 'default' : 'outline'}
                       className={`flex flex-col h-28 w-28 rounded-lg items-center justify-center gap-2 transition-all ${selectedMood === mood.name ? 'ring-2 ring-primary ring-offset-2' : ''}`}
-                      onClick={() => setSelectedMood(mood.name)}
+                      onClick={() => handleMoodSelection(mood.name)}
                     >
                       <mood.icon className="h-12 w-12" />
                       <span className="text-sm">{mood.name}</span>

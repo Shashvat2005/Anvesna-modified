@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
@@ -14,17 +14,35 @@ type JournalEntry = {
   createdAt: Date;
 };
 
+// This will now serve as a default for first-time users.
 const mockEntries: JournalEntry[] = [
     { id: 1, content: "Felt a bit overwhelmed with assignments today. Managed to finish the presentation slides, which is a relief. Tried a 5-minute meditation before bed.", createdAt: new Date(new Date().setDate(new Date().getDate() - 2)) },
     { id: 2, content: "Had a really nice chat with a friend from home. It's good to know I have support. Feeling more positive and hopeful about the week ahead.", createdAt: new Date(new Date().setDate(new Date().getDate() - 1)) },
 ]
 
+const JOURNAL_STORAGE_KEY = 'anvesna-journal-entries';
+
 export default function JournalPage() {
-    const [entries, setEntries] = useState<JournalEntry[]>(mockEntries);
+    const [entries, setEntries] = useState<JournalEntry[]>([]);
     const [newEntry, setNewEntry] = useState('');
     const [summary, setSummary] = useState('');
     const [isSummarizing, setIsSummarizing] = useState(false);
     const { toast } = useToast();
+
+    useEffect(() => {
+        try {
+            const savedEntries = localStorage.getItem(JOURNAL_STORAGE_KEY);
+            if (savedEntries) {
+                const parsedEntries = JSON.parse(savedEntries).map((e: any) => ({...e, createdAt: new Date(e.createdAt)}));
+                setEntries(parsedEntries);
+            } else {
+                setEntries(mockEntries);
+            }
+        } catch (error) {
+            console.error("Failed to load journal entries from localStorage", error);
+            setEntries(mockEntries);
+        }
+    }, []);
 
     const handleSaveEntry = () => {
         if (!newEntry.trim()) {
@@ -42,7 +60,9 @@ export default function JournalPage() {
             createdAt: new Date(),
         };
 
-        setEntries([entry, ...entries]);
+        const updatedEntries = [entry, ...entries];
+        setEntries(updatedEntries);
+        localStorage.setItem(JOURNAL_STORAGE_KEY, JSON.stringify(updatedEntries));
         setNewEntry('');
         toast({
             title: "Entry Saved",
