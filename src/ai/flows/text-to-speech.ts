@@ -20,9 +20,11 @@ export type TextToSpeechInput = z.infer<typeof TextToSpeechInputSchema>;
 const TextToSpeechOutputSchema = z.object({
   audioDataUri: z
     .string()
+    .optional()
     .describe(
       "The generated audio as a data URI. Expected format: 'data:audio/wav;base64,<encoded_data>'."
     ),
+  error: z.string().optional().describe('An error message if audio generation failed.'),
 });
 export type TextToSpeechOutput = z.infer<typeof TextToSpeechOutputSchema>;
 
@@ -39,33 +41,41 @@ const textToSpeechFlow = ai.defineFlow(
     outputSchema: TextToSpeechOutputSchema,
   },
   async (input) => {
-    const { media } = await ai.generate({
-      model: googleAI.model('gemini-2.5-flash-preview-tts'),
-      config: {
-        responseModalities: ['AUDIO'],
-        speechConfig: {
-          voiceConfig: {
-            prebuiltVoiceConfig: { voiceName: 'Erinome' },
+    try {
+      const { media } = await ai.generate({
+        model: googleAI.model('gemini-2.5-flash-preview-tts'),
+        config: {
+          responseModalities: ['AUDIO'],
+          speechConfig: {
+            voiceConfig: {
+              prebuiltVoiceConfig: { voiceName: 'Erinome' },
+            },
           },
         },
-      },
-      prompt: input.text,
-    });
+        prompt: input.text,
+      });
 
-    if (!media) {
-      throw new Error('No audio media returned from the TTS model.');
+      if (!media) {
+        throw new Error('No audio media returned from the TTS model.');
+      }
+
+      const audioBuffer = Buffer.from(
+        media.url.substring(media.url.indexOf(',') + 1),
+        'base64'
+      );
+
+      const wavData = await toWav(audioBuffer);
+
+      return {
+        audioDataUri: 'data:audio/wav;base64,' + wavData,
+      };
+    } catch (e: any) {
+        console.error("TTS Flow Error:", e);
+        if (e.message && e.message.includes('429 Too Many Requests')) {
+            return { error: "You've reached the daily usage limit for text-to-speech. Please try again tomorrow." };
+        }
+        return { error: "An unexpected error occurred while generating audio." };
     }
-
-    const audioBuffer = Buffer.from(
-      media.url.substring(media.url.indexOf(',') + 1),
-      'base64'
-    );
-
-    const wavData = await toWav(audioBuffer);
-
-    return {
-      audioDataUri: 'data:audio/wav;base64,' + wavData,
-    };
   }
 );
 

@@ -74,23 +74,29 @@ export default function AiCompanionPage() {
       setMessages((prev) => [...prev, assistantMessage]);
 
       if (isTtsEnabled) {
-          setIsTtsLoading(true);
-          try {
-              const ttsResponse = await textToSpeech({ text: response.response });
-              if (audioRef.current) {
-                  audioRef.current.src = ttsResponse.audioDataUri;
-                  audioRef.current.play().catch(e => console.error("Audio playback failed:", e));
-              }
-          } catch (ttsError) {
-              console.error("Error with TTS generation:", ttsError);
-              toast({
-                  title: "Text-to-Speech Failed",
-                  description: "Couldn't generate audio. You may have reached the daily usage limit for this feature.",
-                  variant: "destructive",
-              });
-          } finally {
-              setIsTtsLoading(false);
+        setIsTtsLoading(true);
+        try {
+          const ttsResponse = await textToSpeech({ text: response.response });
+          if (ttsResponse.error) {
+            toast({
+              title: "Text-to-Speech Failed",
+              description: ttsResponse.error,
+              variant: "destructive",
+            });
+          } else if (audioRef.current && ttsResponse.audioDataUri) {
+            audioRef.current.src = ttsResponse.audioDataUri;
+            audioRef.current.play().catch(e => console.error("Audio playback failed:", e));
           }
+        } catch (error) {
+          console.error("Error calling TTS service:", error);
+          toast({
+            title: "Text-to-Speech Error",
+            description: "An unexpected error occurred while trying to generate audio.",
+            variant: "destructive",
+          });
+        } finally {
+          setIsTtsLoading(false);
+        }
       }
 
     } catch (error) {
