@@ -1,31 +1,61 @@
-import { ShieldCheck, UserCheck, School } from "lucide-react";
+'use client';
+
+import { motion } from 'framer-motion';
+import { ShieldCheck, UserCheck, School } from 'lucide-react';
 
 const indicators = [
   {
     icon: ShieldCheck,
-    text: "Privacy Assured & HIPAA Compliant",
+    text: 'Privacy Assured & HIPAA Compliant',
   },
   {
     icon: UserCheck,
-    text: "Licensed & Verified Professionals",
+    text: 'Licensed & Verified Professionals',
   },
   {
     icon: School,
-    text: "Trusted by University Partners",
+    text: 'Trusted by University Partners',
   },
 ];
 
 export function TrustIndicators() {
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.3,
+        delayChildren: 0.2,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: {
+        duration: 0.5,
+      },
+    },
+  };
+
   return (
-    <section
+    <motion.section
       className="bg-background py-12 sm:py-16"
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, amount: 0.5 }}
+      variants={containerVariants}
     >
       <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 gap-8 text-center md:grid-cols-3">
           {indicators.map((indicator, index) => (
-            <div
+            <motion.div
               key={index}
               className="flex items-center justify-center gap-4"
+              variants={itemVariants}
             >
               <indicator.icon
                 className="h-8 w-8 text-primary"
@@ -34,10 +64,10 @@ export function TrustIndicators() {
               <span className="text-base font-medium text-muted-foreground">
                 {indicator.text}
               </span>
-            </div>
+            </motion.div>
           ))}
         </div>
       </div>
-    </section>
+    </motion.section>
   );
 }
