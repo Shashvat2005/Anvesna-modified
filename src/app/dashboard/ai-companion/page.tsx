@@ -36,6 +36,23 @@ export default function AiCompanionPage() {
   const audioRef = useRef<HTMLAudioElement>(null);
   const { toast } = useToast();
 
+  useEffect(() => {
+    // This effect runs once on mount to set a more personalized initial greeting if possible.
+    try {
+      const savedEntriesJSON = localStorage.getItem(JOURNAL_STORAGE_KEY);
+      if (savedEntriesJSON) {
+        const entries = JSON.parse(savedEntriesJSON);
+        if (entries && entries.length > 0) {
+          const awareMessage = "Hey, I've had a chance to read your recent journal entries. Just wanted you to know I'm here to listen if you feel like talking.";
+          setMessages([{ role: 'assistant', content: awareMessage }]);
+        }
+      }
+    } catch (error) {
+      console.error("Could not load journal entries for initial greeting.", error);
+      // If there's an error, we just stick with the default message.
+    }
+  }, []); // Empty dependency array ensures this runs once on mount.
+
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim() || isLoading) return;
