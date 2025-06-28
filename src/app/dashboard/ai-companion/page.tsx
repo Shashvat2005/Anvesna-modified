@@ -10,6 +10,7 @@ import { respondToUserQuery, RespondToUserQueryInput } from '@/ai/flows/respond-
 import { textToSpeech } from '@/ai/flows/text-to-speech';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
+import { useToast } from "@/hooks/use-toast";
 
 type Message = {
   role: 'user' | 'assistant';
@@ -33,6 +34,7 @@ export default function AiCompanionPage() {
   
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
+  const { toast } = useToast();
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -81,6 +83,11 @@ export default function AiCompanionPage() {
               }
           } catch (ttsError) {
               console.error("Error with TTS generation:", ttsError);
+              toast({
+                  title: "Text-to-Speech Failed",
+                  description: "Couldn't generate audio. You may have reached the daily usage limit for this feature.",
+                  variant: "destructive",
+              });
           } finally {
               setIsTtsLoading(false);
           }
