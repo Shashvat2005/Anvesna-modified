@@ -49,7 +49,7 @@ export function Hero() {
               variants={itemVariants}
             >
               Get 24/7 support from your personal AI companion, connect
-              anonymously with others facing similar challenges, and book
+              anonymously with others facing similar challenges and book
               sessions with licensed therapists—all in one platform.
             </motion.p>
             <motion.div
