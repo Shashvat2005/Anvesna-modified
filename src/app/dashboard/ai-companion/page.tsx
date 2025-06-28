@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Bot, User, Send, Loader2, Volume2, VolumeX } from 'lucide-react';
+import { Bot, User, Send, Loader2, Volume2, VolumeX, Microphone } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { respondToUserQuery, RespondToUserQueryInput } from '@/ai/flows/respond-to-user-query';
 import { textToSpeech } from '@/ai/flows/text-to-speech';
@@ -20,6 +20,14 @@ type Message = {
 const JOURNAL_STORAGE_KEY = 'anvesna-journal-entries';
 const MOOD_STORAGE_KEY = 'anvesna-mood-history';
 
+// Extend window type for SpeechRecognition
+declare global {
+    interface Window {
+        SpeechRecognition: any;
+        webkitSpeechRecognition: any;
+    }
+}
+
 export default function AiCompanionPage() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
@@ -27,9 +35,11 @@ export default function AiCompanionPage() {
   const [isTtsEnabled, setIsTtsEnabled] = useState(false);
   const [isTtsLoading, setIsTtsLoading] = useState(false);
   const [isInitialLoading, setIsInitialLoading] = useState(true);
+  const [isListening, setIsListening] = useState(false);
   
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
+  const recognitionRef = useRef<any>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -75,6 +85,53 @@ export default function AiCompanionPage() {
     
     getInitialGreeting();
   }, []); // Empty dependency array ensures this runs once on mount.
+
+  useEffect(() => {
+    // This effect handles setting up the Web Speech API for voice-to-text.
+    // It's client-side only.
+    if (typeof window !== 'undefined' && ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window)) {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      const recognition = new SpeechRecognition();
+      recognition.continuous = false;
+      recognition.lang = 'en-US';
+      recognition.interimResults = false;
+
+      recognition.onstart = () => {
+        setIsListening(true);
+      };
+      
+      recognition.onend = () => {
+        setIsListening(false);
+      };
+
+      recognition.onerror = (event: any) => {
+        console.error('Speech recognition error:', event.error);
+        let errorMessage = 'An unknown error occurred during speech recognition.';
+        if (event.error === 'no-speech') {
+            errorMessage = "No speech was detected. Please try again.";
+        } else if (event.error === 'audio-capture') {
+            errorMessage = "There was a problem with your microphone.";
+        } else if (event.error === 'not-allowed') {
+            errorMessage = "Microphone access was denied. Please enable it in your browser settings.";
+        }
+        toast({
+          title: "Speech Recognition Error",
+          description: errorMessage,
+          variant: "destructive",
+        });
+        setIsListening(false);
+      };
+      
+      recognition.onresult = (event: any) => {
+        const transcript = event.results[event.results.length - 1][0].transcript;
+        setInput((prev) => prev.trim() ? `${prev.trim()} ${transcript}` : transcript);
+      };
+
+      recognitionRef.current = recognition;
+    } else {
+        console.warn("Speech recognition not supported in this browser.");
+    }
+  }, [toast]);
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -148,6 +205,23 @@ export default function AiCompanionPage() {
       console.error("Error with AI response:", error);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleVoiceInput = () => {
+    if (!recognitionRef.current) {
+        toast({
+            title: "Not Supported",
+            description: "Voice input is not supported in your browser.",
+            variant: "destructive"
+        })
+        return;
+    }
+    
+    if (isListening) {
+      recognitionRef.current.stop();
+    } else {
+      recognitionRef.current.start();
     }
   };
 
@@ -251,10 +325,21 @@ export default function AiCompanionPage() {
                         <Input
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
-                            placeholder="Type your message..."
+                            placeholder="Type your message or use the microphone..."
                             disabled={isLoading || isInitialLoading}
                             className="flex-1"
                         />
+                        <Button
+                            type="button"
+                            variant="outline"
+                            size="icon"
+                            onClick={handleVoiceInput}
+                            disabled={isLoading || isInitialLoading}
+                            className={isListening ? 'text-primary ring-2 ring-primary animate-pulse' : ''}
+                        >
+                            <Microphone className="h-5 w-5" />
+                            <span className="sr-only">{isListening ? 'Stop listening' : 'Use microphone'}</span>
+                        </Button>
                         <Button type="submit" disabled={isLoading || isInitialLoading || !input.trim()}>
                             {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5" />}
                             <span className="sr-only">Send</span>
