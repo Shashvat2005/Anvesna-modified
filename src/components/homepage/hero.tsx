@@ -68,14 +68,6 @@ export function Hero() {
                 <Link href="/dashboard/therapists">Find My Therapist</Link>
               </Button>
             </motion.div>
-            <motion.p
-              className="mt-6 text-center text-sm text-muted-foreground lg:text-left"
-              variants={itemVariants}
-            >
-              Trusted by{' '}
-              <strong className="text-foreground">10,000+ users</strong> seeking
-              mental wellness.
-            </motion.p>
           </motion.div>
           <motion.div
             className="flex justify-center"

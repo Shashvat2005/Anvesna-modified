@@ -15,13 +15,26 @@ export function Footer() {
               Your journey to mental wellness starts here. Safe, private, and accessible support for Indian students.
             </p>
             <div className="mt-6 flex space-x-4">
-              <Link href="#" aria-label="Twitter">
+              <Link 
+              href="https://x.com/Anvesna_app?t=r9HBVF7OEFF85KMNcDmS_g&s=09" 
+              aria-label="Twitter"
+              target="_blank"
+              rel="noopener noreferrer"
+              >
                 <Twitter className="h-6 w-6 text-muted-foreground hover:text-primary" />
               </Link>
-              <Link href="#" aria-label="LinkedIn">
+              <Link href="https://www.linkedin.com/company/anvesna-app/" 
+              aria-label="LinkedIn" 
+              target="_blank"
+              rel="noopener noreferrer"
+              >
                 <Linkedin className="h-6 w-6 text-muted-foreground hover:text-primary" />
               </Link>
-              <Link href="#" aria-label="Instagram">
+              <Link href="#" 
+              aria-label="Instagram"
+              target="_blank"
+              rel="noopener noreferrer"
+              >
                 <Instagram className="h-6 w-6 text-muted-foreground hover:text-primary" />
               </Link>
             </div>
@@ -66,8 +79,8 @@ export function Footer() {
           </div>
         </div>
         <div className="mt-8 border-t pt-8 text-center text-sm text-muted-foreground">
-          <p>&copy; 2024 Anvesna. All rights reserved. | Made with ❤️ from India for the world.</p>
-          <p className="mt-2">If you are in a crisis, please call 911 or go to your nearest emergency room.</p>
+          <p>&copy; 2025 Anvesna. All rights reserved. | Made with ❤️ from India for the world.</p>
+          <p className="mt-2">If you are in a crisis, please call 112 or go to your nearest emergency room.</p>
         </div>
       </div>
     </footer>
